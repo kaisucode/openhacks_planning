@@ -70,6 +70,7 @@ player controls:
 # specs
 note: center of the world is (0,0,0)
 
+```
 game_state = {
   "redTeam": {
     "teamlives": 5
@@ -96,5 +97,5 @@ game_state = {
     ]
   }
 }
-
+```
 
