@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Hmm</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" charset="utf-8"></script>
+  </head>
+  <body>
+<script>
+  const socket = io('http://localhost/');
+  socket.on('connect', () => {
+    socket.send('hi');
+
+    socket.on('message', (msg) => {
+      // my msg
+    });
+  });
+</script>
+  </body>
+</html>
