@@ -32,8 +32,6 @@ const RADIUS = {
 const PLAYERS = ["redA", "redB", "bluA", "bluB"];
 // constants, exist in both files
 
-
-
 var camera = new THREE.PerspectiveCamera( 75, WIDTH / HEIGHT, 1, 1000 );
 window.addEventListener('resize', function() {
   WIDTH = window.innerWidth;
@@ -243,7 +241,6 @@ function update_HUD(){
 }
 update_HUD();
 
-
 function animate() {
 	requestAnimationFrame( animate );
   camera.position.x = game_environment[whoami].pos.x;
@@ -263,4 +260,10 @@ function animate() {
 	renderer.render( scene, camera );
 }
 animate();
+
+setTimeout(()=>{
+  socket.on('update', (new_game_environment)=>{
+    game_environment = new_game_environment;
+  });
+}, 1000 );
 
