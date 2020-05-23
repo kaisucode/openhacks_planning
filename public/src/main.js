@@ -53,10 +53,11 @@ let game_environment = {
 }
 
 let whoami = "redA";
+let heading =  {"x": 1, "y": 2, "z": 3};
 
 function updatePlayerMovement(direction){
 	// vel = calculatePlayerVel();
-	vel =  {"x": 1, "y": 2, "z": 3}};
+	vel =  {"x": 1, "y": 2, "z": 3};
 	updatedPlayerData = {
 		"role": whoami, 
 		"vel": vel
@@ -65,12 +66,16 @@ function updatePlayerMovement(direction){
 }
 
 function shooting(){
-	// vel = calculateBooleitVel();		// From player heading
-	vel =  {"x": 1, "y": 2, "z": 3}};
+	let booleitVel = {
+		"x": game_environment[whoami]["pos"]["x"] + header["x"], 
+		"y": game_environment[whoami]["pos"]["y"] + header["y"], 
+		"z": game_environment[whoami]["pos"]["z"] + header["z"]
+	};
+
 	updatedBooleitData = {
 		"owner": whoami, 
-		"vel" =  vel
-	}
+		"vel" =  booleitVel
+	};
 	socket.emit('shooting', updatedBooleitData);
 }
 
