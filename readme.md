@@ -3,6 +3,8 @@
 # Authors
 Gavin, Kevin, Walter, Alek
 
+![endgame.png](endgame.png)
+
 # Tools
 Three.js (a wrapper around WEBGL)
 socket.io in python for backend stuff
