@@ -1,0 +1,18 @@
+
+*{
+	text-align: center;
+}
+
+.container{
+	background-color: pink;
+	color: white;
+}
+
+.button{
+	margin: 10px;
+}
+
+#teamRed{
+	background-color: red;
+}
+

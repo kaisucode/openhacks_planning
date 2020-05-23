@@ -58,12 +58,57 @@ let game_environment = {
   }
 }
 
+playerTaken = {
+	"redA": false,
+	"redB": false,
+	"bluA": false,
+	"bluB": false
+}
+
 io.sockets.on('connection', function(socket){
 	console.log("connected");
 	socket.emit("chat message", "GREETINGS FROM SERVER")
 	socket.on('disconnect', function(){
 		console.log("player disconnected");
 	});
+
+	socket.on('pickedTeam', function(choice){
+		console.log(playerTaken);
+		if(choice["team"] == "red"){
+			if(!playerTaken["redA"]){
+				socket.emit("whoami", "redA");
+				playerTaken["redA"] = true;
+			}
+			else if(!playerTaken["redB"]){
+				socket.emit("whoami", "redB");
+				playerTaken["redB"] = true;
+			}
+			else{
+				socket.emit("whoami", "chooseBlu");
+			}
+		}
+
+		else if(choice["team"] == "blu"){
+			if(!playerTaken["bluA"]){
+				socket.emit("whoami", "bluA");
+				playerTaken["bluA"] = true;
+			}
+			else if(!playerTaken["bluB"]){
+				socket.emit("whoami", "bluB");
+				playerTaken["bluB"] = true;
+			}
+			else{
+				socket.emit("whoami", "chooseRed");
+			}
+		}
+
+		if(playerTaken["redA"] && playerTaken["redB"] && playerTaken["bluA"] && playerTaken["bluB"]){
+			socket.broadcast.emit("startGame", "let the hunger games begin");
+			socket.emit("startGame", "let the hunger games begin");
+		}
+ 
+	})
+
 
 	socket.on('playerMovementOnPlanet', function(playerMovement){
 		console.log("hai");
@@ -111,17 +156,17 @@ function vecDiffMagSquared(a, b){
   return vecMagSquared(vecDiff(a,b));
 }
 
-setTimeout(update, 1000);
-function update(){
-  for(p in PLAYERS){
-    let player = PLAYERS[p];
-    for(i in game_environment.environment.asteroids){
-      let asteroid = game_environment.environment.asteroids[i];
-      if(vecDiffMagSquared(player, asteroid) <= sq(asteroid.radius) + sq()){
-      }
-  }
-  setTimeout(update, 1000);
-};
+// setTimeout(update, 1000);
+// function update(){
+//   for(p in PLAYERS){
+//     let player = PLAYERS[p];
+//     for(i in game_environment.environment.asteroids){
+//       let asteroid = game_environment.environment.asteroids[i];
+//       if(vecDiffMagSquared(player, asteroid) <= sq(asteroid.radius) + sq()){
+//       }
+//   }
+//   setTimeout(update, 1000);
+// };
 
 
 
