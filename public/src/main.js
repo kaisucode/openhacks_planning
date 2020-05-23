@@ -32,10 +32,10 @@ let game_environment = {
   "bluTeam": {
     "teamlives": 5
   },
-  "redA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "redB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "bluA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "bluB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "redA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
+  "redB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
+  "bluA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
+  "bluB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false},
   "environment": {
     "asteroids": [
       {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4},
@@ -54,16 +54,6 @@ let game_environment = {
 
 let whoami = "redA";
 let heading =  {"x": 1, "y": 2, "z": 3};
-
-function updatePlayerMovement(direction){
-	// vel = calculatePlayerVel();
-	vel =  {"x": 1, "y": 2, "z": 3};
-	updatedPlayerData = {
-		"role": whoami, 
-		"vel": vel
-	}
-	socket.emit('movement', updatedPlayerData);
-}
 
 function shooting(){
 	let booleitVel = {
@@ -88,25 +78,24 @@ function onDocumentKeyDown(event) {
   if(KEY_CODES[keyCode] == "e"){
     camera.rotateZ(-0.01);
   }
-	if(KEY_CODES[keyCode] == "w"){
-		updatePlayerMovement("up");
-    game_environment[whoami].pos.x += 1;
-    console.log("w");
-	}
-	if(KEY_CODES[keyCode] == "a"){
-		updatePlayerMovement("left");
-    game_environment[whoami].pos.y += 1;
-    console.log("a");
-	}
-	if(KEY_CODES[keyCode] == "s"){
-		updatePlayerMovement("down");
-    game_environment[whoami].pos.x -= 1;
-    console.log("s");
-	}
-	if(KEY_CODES[keyCode] == "d"){
-		updatePlayerMovement("right");
-    game_environment[whoami].pos.y -= 1;
-    console.log("d");
+
+	if(game_environment[whoami]["onPlanet"]){
+		if(KEY_CODES[keyCode] == "w"){
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "up"});
+			console.log("w");
+		}
+		if(KEY_CODES[keyCode] == "a"){
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "left"});
+			console.log("a");
+		}
+		if(KEY_CODES[keyCode] == "s"){
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "down"});
+			console.log("s");
+		}
+		if(KEY_CODES[keyCode] == "d"){
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "right"});
+			console.log("d");
+		}
 	}
 
 	if(KEY_CODES[keyCode] == "space"){

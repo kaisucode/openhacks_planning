@@ -21,10 +21,10 @@ let game_environment = {
   "bluTeam": {
     "teamlives": 5
   },
-  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "bluA": { "booleits": 10, "pos": {"x": -10, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
+  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
+  "bluA": { "booleits": 10, "pos": {"x": -10, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
+  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
   "environment": {
     "asteroids": [
       {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4},
@@ -49,7 +49,7 @@ io.sockets.on('connection', function(socket){
 		console.log("player disconnected");
 	});
 
-	socket.on('movement', function(playerMovement){
+	socket.on('playerMovementOnPlanet', function(playerMovement){
 		console.log("hai");
 		let player = playerMovement["role"];
 		game_environment[player]["vel"] = playerMovement["vel"];
