@@ -55,12 +55,10 @@ player controls:
 
 - be able to have a "game environment" in python, with some players connected to it. socket clinets will have a game id, and each game environment object in python has stored the game stuff (asteroid locations, player locations, team lives, etc). sockets need to be able to read their game environment data. Hopefully this is on kevin's (or maybe gavin's) digital ocean server (but first locally). Note: when the clients press keys this has to be sent to the python server. Note: clients to be able to kinda extrapolate the state.
   - subtasks: 
-    - what is the game state? 
-    - render the game state 
-    - instantiate sockets 
-    - read and write game state
+    - render the game state @WALTER && ALEK [[draw example json]]
+    - instantiate sockets @KEVIN [[can read game state and make python print something (from developer console)]]
     - update the game state on keyboard presses 
-    - extrapolate game state 
+    - extrapolate game state @GAVIN
     - shooting
     - putting collectible objects on the map
 - team building site
