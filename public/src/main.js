@@ -5,15 +5,6 @@ const center = new THREE.Vector3(dim/2,dim/2,dim/2);
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
 
-const KEY_CODES = {
-  87: "w",
-  65: "a",
-  83: "s",
-  68: "d",
-  32: "space",
-  81: "q",
-  69: "e"
-}
 
 // constants, exist in both files
 const MASS = {
@@ -87,40 +78,50 @@ function shooting(){
 	socket.emit('shooting', updatedBooleitData);
 }
 
-document.addEventListener("keydown", onDocumentKeyDown, false);
-function onDocumentKeyDown(event) {
-  var keyCode = event.which;
-  if(KEY_CODES[keyCode] == "q"){
+
+var keysPressed = {};
+var keysPressedTimes = {};
+document.addEventListener("keyup", (event) => { keysPressed[event.key] = false; }, false);
+document.addEventListener("keydown", (event) => { keysPressed[event.key] = true; }, false);
+
+
+function handleKeys() {
+  if(game_environment[whoami]["onPlanet"]){
+    if (keysPressed['w']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "up"});
+      console.log("w");
+    }
+    if (keysPressed['a']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "left"});
+      console.log("a");
+    }
+    if (keysPressed['s']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "down"});
+      console.log("s");
+    }
+    if (keysPressed['d']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "right"});
+      console.log("d");
+    }
+  }
+  if(keysPressed[" "]){
+    shooting();
+    console.log("space");
+  }
+  if(keysPressed["q"]){
     camera.rotateZ(0.01);
   }
-  if(KEY_CODES[keyCode] == "e"){
+  if(keysPressed["e"]){
     camera.rotateZ(-0.01);
   }
 
-	if(game_environment[whoami]["onPlanet"]){
-		if(KEY_CODES[keyCode] == "w"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "up"});
-			console.log("w");
-		}
-		if(KEY_CODES[keyCode] == "a"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "left"});
-			console.log("a");
-		}
-		if(KEY_CODES[keyCode] == "s"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "down"});
-			console.log("s");
-		}
-		if(KEY_CODES[keyCode] == "d"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "right"});
-			console.log("d");
-		}
-	}
+}
 
-	if(KEY_CODES[keyCode] == "space"){
-		shooting();
-    console.log("space");
-	}
-};
+
+
+
+
+
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor (0x000000, 1);
