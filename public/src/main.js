@@ -81,19 +81,19 @@ function onDocumentKeyDown(event) {
 
 	if(game_environment[whoami]["onPlanet"]){
 		if(KEY_CODES[keyCode] == "w"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "up"});
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
 			console.log("w");
 		}
 		if(KEY_CODES[keyCode] == "a"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "left"});
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
 			console.log("a");
 		}
 		if(KEY_CODES[keyCode] == "s"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "down"});
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
 			console.log("s");
 		}
 		if(KEY_CODES[keyCode] == "d"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "right"});
+			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
 			console.log("d");
 		}
 	}
