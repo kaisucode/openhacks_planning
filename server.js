@@ -16,7 +16,6 @@ app.get('/', function(req, res){
 
 
 
-
 io.sockets.on('connection', function(socket){
 	console.log("connected");
 	socket.emit("chat message", "HAIII FROM SERVER")
@@ -27,7 +26,5 @@ io.sockets.on('connection', function(socket){
 	});
 
 })
-
-
 
 
