@@ -71,29 +71,29 @@ player controls:
 note: center of the world is (0,0,0)
 
 ```
-game_state = {
+let game_environment = {
   "redTeam": {
     "teamlives": 5
   },
-  "blueTeam": {
+  "bluTeam": {
     "teamlives": 5
   },
-  "redA": { "booleits": 10, "pos": [1,2,3], "vel": [4,5,6] },
-  "redB": { "booleits": 10, "pos": [1,2,3], "vel": [4,5,6] },
-  "bluA": { "booleits": 10, "pos": [1,2,3], "vel": [4,5,6] },
-  "bluB": { "booleits": 10, "pos": [1,2,3], "vel": [4,5,6] }
+  "redA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "redB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "bluA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "bluB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
   "environment": {
     "asteroids": [
-      {"pos": [1,2,3], "vel": [1,2,3], "mass": 4},
-      {"pos": [1,2,3], "vel": [5,4,5], "mass": 6},
-      {"pos": [1,2,3], "vel": [1,2,3], "mass": 7}
+      {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4},
+      {"pos": {"x": 1, "y": 300, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 6},
+      {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7}
     ],
     "amoboxes": [
-      {"pos": [1,2,3], "vel": [1,2,3]},
+      {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}},
     ],
-    "extralife": {"pos": [1,2,3], "vel": [1,2,3]},
+    "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
     "booleits": [
-      {"pos": [1,2,3], "vel": [1,2,3], "mass": 7}
+      {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
     ]
   }
 }
