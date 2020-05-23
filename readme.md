@@ -98,3 +98,16 @@ game_state = {
   }
 }
 ```
+
+# 1pm progress
+- cube is rendered at player position
+  - other stuff should be rendered too
+- server can send/recieve messages
+
+# 1pm goals for next meeting
+- get everything rendered - alek + walter
+- sending/recieving game state - kevin
+- update speculation - gavin
+
+
+
