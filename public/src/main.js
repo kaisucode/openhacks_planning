@@ -98,7 +98,7 @@ renderer.domElement.addEventListener("mousemove", evt=> {
 });
 renderer.domElement.id = "threejscanvas";
 document.body.appendChild( renderer.domElement );
-renderer.domElement.style.cursor = "crosshair";
+renderer.domElement.style.cursor = "none";
 
 var scene = new THREE.Scene();
 
