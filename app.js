@@ -126,7 +126,7 @@ io.sockets.on('connection', function(socket){
       let player = PLAYERS[p];
       for(i in game_environment.environment.asteroids){
         let asteroid = game_environment.environment.asteroids[i];
-        if(vecDiffMagSquared(player, asteroid) <= sq(asteroid.radius) + sq(RADIUS.player)){
+        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= 5*(sq(asteroid.radius) + sq(RADIUS.player))){
           game_environment[player].onPlanet = true;
 
           for(let i = 0; i < 100; i++)
