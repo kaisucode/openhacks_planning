@@ -95,7 +95,7 @@ renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
 canvas.addEventListener("mousemove", evt=> {
   var rect = canvas.getBoundingClientRect();
-  camera.rotation.y = Math.PI*(evt.clientX - rect.left)/WIDTH-Math.PI/2;
+  camera.rotation.y = -Math.PI*(evt.clientX - rect.left)/WIDTH-Math.PI/2;
   camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT-Math.PI/2;
 });
 canvas.id = "threejscanvas";
@@ -103,6 +103,8 @@ document.body.appendChild( canvas );
 
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 canvas.requestPointerLock()
+
+
 canvas.style.cursor = "none";
 var scene = new THREE.Scene();
 
