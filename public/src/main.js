@@ -4,16 +4,8 @@ const dim = 100;
 const center = new THREE.Vector3(dim/2,dim/2,dim/2);
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
-
-const KEY_CODES = {
-  87: "w",
-  65: "a",
-  83: "s",
-  68: "d",
-  32: "space",
-  81: "q",
-  69: "e"
-}
+let gameenvLoaded = false;
+let game_environment;
 
 // constants, exist in both files
 const MASS = {
@@ -32,8 +24,6 @@ const RADIUS = {
 const PLAYERS = ["redA", "redB", "bluA", "bluB"];
 // constants, exist in both files
 
-
-
 var camera = new THREE.PerspectiveCamera( 75, WIDTH / HEIGHT, 1, 1000 );
 window.addEventListener('resize', function() {
   WIDTH = window.innerWidth;
@@ -42,33 +32,6 @@ window.addEventListener('resize', function() {
   camera.aspect = WIDTH / HEIGHT;
   camera.updateProjectionMatrix();
 });
-
-let game_environment = {
-  "redTeam": {
-    "teamlives": 5
-  },
-  "bluTeam": {
-    "teamlives": 5
-  },
-  "redA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "redB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "bluA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "bluB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "environment": {
-    "asteroids": [
-      {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4, "radius": 4},
-      {"pos": {"x": 1, "y": 300, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 6, "radius": 6},
-      {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "radius": 7}
-    ],
-    "amoboxes": [
-      {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}}
-    ],
-    "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
-    "booleits": [
-      {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
-    ]
-  }
-}
 
 let whoami = "redA";
 let heading =  {"x": 1, "y": 2, "z": 3};
@@ -87,98 +50,112 @@ function shooting(){
 	socket.emit('shooting', updatedBooleitData);
 }
 
-document.addEventListener("keydown", onDocumentKeyDown, false);
-function onDocumentKeyDown(event) {
-  var keyCode = event.which;
-  if(KEY_CODES[keyCode] == "q"){
+
+var keysPressed = {};
+var keysPressedTimes = {};
+document.addEventListener("keyup", (event) => { keysPressed[event.key] = false; }, false);
+document.addEventListener("keydown", (event) => { keysPressed[event.key] = true; }, false);
+
+
+function handleKeys() {
+  if(game_environment[whoami]["onPlanet"]){
+    if (keysPressed['w']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
+      console.log("w");
+    }
+    if (keysPressed['a']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
+      console.log("a");
+    }
+    if (keysPressed['s']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
+      console.log("s");
+    }
+    if (keysPressed['d']) {
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
+      console.log("d");
+    }
+  }
+  if(keysPressed[" "]){
+    shooting();
+    console.log("space");
+  }
+  if(keysPressed["q"]){
     camera.rotateZ(0.01);
   }
-  if(KEY_CODES[keyCode] == "e"){
+  if(keysPressed["e"]){
     camera.rotateZ(-0.01);
   }
-
-	if(game_environment[whoami]["onPlanet"]){
-		if(KEY_CODES[keyCode] == "w"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
-			console.log("w");
-		}
-		if(KEY_CODES[keyCode] == "a"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
-			console.log("a");
-		}
-		if(KEY_CODES[keyCode] == "s"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
-			console.log("s");
-		}
-		if(KEY_CODES[keyCode] == "d"){
-			socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
-			console.log("d");
-		}
-	}
-
-	if(KEY_CODES[keyCode] == "space"){
-		shooting();
-    console.log("space");
-	}
-};
+}
 
 var renderer = new THREE.WebGLRenderer();
+let canvas = renderer.domElement;
+
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
-renderer.domElement.addEventListener("mousemove", evt=> {
-  var rect = renderer.domElement.getBoundingClientRect();
-  camera.rotation.y = Math.PI*(evt.clientX - rect.left)/WIDTH-Math.PI/2;
+canvas.addEventListener("mousemove", evt=> {
+  var rect = canvas.getBoundingClientRect();
+  camera.rotation.y = -Math.PI*(evt.clientX - rect.left)/WIDTH-Math.PI/2;
   camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT-Math.PI/2;
 });
-renderer.domElement.id = "threejscanvas";
-document.body.appendChild( renderer.domElement );
-renderer.domElement.style.cursor = "crosshair";
+canvas.id = "threejscanvas";
+document.body.appendChild( canvas );
 
+canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+canvas.requestPointerLock()
+
+
+canvas.style.cursor = "none";
 var scene = new THREE.Scene();
 
 let light = new THREE.AmbientLight(0xffffff);
 scene.add(light);
 
 let players = {};
-for (let player in PLAYERS){
-  let geometry = new THREE.BoxGeometry(1,1,1);
-  let material = new THREE.MeshPhongMaterial({color: "#44aa88"});
-  const cube = new THREE.Mesh(geometry, material);
-  cube.rotation.x = Math.random()*Math.PI*2;
-  cube.rotation.y = Math.random()*Math.PI*2;
-  cube.rotation.z = Math.random()*Math.PI*2;
-
-  cube.position.x = game_environment[PLAYERS[player]].pos.x;
-  cube.position.y = game_environment[PLAYERS[player]].pos.y;
-  cube.position.z = game_environment[PLAYERS[player]].pos.z;
-  scene.add(cube);
-  players[PLAYERS[player]] = cube;
-}
-
 let asteroids = [];
-for (let i in game_environment.environment.asteroids){
-  let asteroid = game_environment.environment.asteroids[i];
-  let geometry = new THREE.SphereGeometry(Math.pow(asteroid.mass/2, 3));
-  let material = new THREE.MeshPhongMaterial({color: "#ffffff"});
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.x = asteroid.pos.x;
-  cube.position.y = asteroid.pos.y;
-  cube.position.z = asteroid.pos.z;
-  scene.add(cube);
-  asteroids.push(cube);
-}
-
 let booleits = [];
-for (let i in game_environment.environment.booleits){
-  let booleit = game_environment.environment.booleits[i];
-  let geometry = new THREE.SphereGeometry(1);
-  let material = new THREE.MeshPhongMaterial({color: "#ff0000"});
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.x = booleit.pos.x;
-  cube.position.y = booleit.pos.y;
-  cube.position.z = booleit.pos.z;
-  scene.add(cube);
-  booleits.push(cube);
+
+function initGameEnv(){
+  for (let player in PLAYERS){
+    let geometry = new THREE.BoxGeometry(1,1,1);
+    let material = new THREE.MeshPhongMaterial({color: "#44aa88"});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.rotation.x = Math.random()*Math.PI*2;
+    cube.rotation.y = Math.random()*Math.PI*2;
+    cube.rotation.z = Math.random()*Math.PI*2;
+
+    cube.position.x = game_environment[PLAYERS[player]].pos.x;
+    cube.position.y = game_environment[PLAYERS[player]].pos.y;
+    cube.position.z = game_environment[PLAYERS[player]].pos.z;
+    scene.add(cube);
+    players[PLAYERS[player]] = cube;
+  }
+
+  for (let i in game_environment.environment.asteroids){
+    let asteroid = game_environment.environment.asteroids[i];
+    let geometry = new THREE.SphereGeometry(Math.pow(asteroid.mass/2, 3));
+    let material = new THREE.MeshPhongMaterial({color: "#ffffff"});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.x = asteroid.pos.x;
+    cube.position.y = asteroid.pos.y;
+    cube.position.z = asteroid.pos.z;
+    scene.add(cube);
+    asteroids.push(cube);
+  }
+
+  for (let i in game_environment.environment.booleits){
+    let booleit = game_environment.environment.booleits[i];
+    let geometry = new THREE.SphereGeometry(1);
+    let material = new THREE.MeshPhongMaterial({color: "#ff0000"});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.x = booleit.pos.x;
+    cube.position.y = booleit.pos.y;
+    cube.position.z = booleit.pos.z;
+    scene.add(cube);
+    booleits.push(cube);
+  }
+
+  update_HUD();
 }
 
 
@@ -241,8 +218,6 @@ function update_HUD(){
     $("body").append(`<p style='position:absolute; top:5vh; right:0; color: white'>Booleits: ${whoami}</p>`);
   }
 }
-update_HUD();
-
 
 function animate() {
 	requestAnimationFrame( animate );
@@ -262,5 +237,14 @@ function animate() {
 
 	renderer.render( scene, camera );
 }
-animate();
+
+socket.on('update', (new_game_environment)=>{
+  game_environment = new_game_environment;
+  handleKeys();
+  if(!gameenvLoaded){
+    gameenvLoaded = true;
+    initGameEnv();
+    animate();
+  }
+});
 
