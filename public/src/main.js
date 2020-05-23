@@ -54,24 +54,54 @@ let game_environment = {
 
 let whoami = "redA";
 
+function updatePlayerMovement(direction){
+	// vel = calculatePlayerVel();
+	vel =  {"x": 1, "y": 2, "z": 3}};
+	updatedPlayerData = {
+		"role": whoami, 
+		"vel": vel
+	}
+	socket.emit('movement', updatedPlayerData);
+}
+
+function shooting(){
+	// vel = calculateBooleitVel();		// From player heading
+	vel =  {"x": 1, "y": 2, "z": 3}};
+	updatedBooleitData = {
+		"owner": whoami, 
+		"vel" =  vel
+	}
+	socket.emit('shooting', updatedBooleitData);
+}
+
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
-  if(KEY_CODES[keyCode] == "w")
+	if(KEY_CODES[keyCode] == "w"){
+		updatePlayerMovement("up");
     console.log("w");
-  if(KEY_CODES[keyCode] == "a")
+	}
+	if(KEY_CODES[keyCode] == "a"){
+		updatePlayerMovement("left");
     console.log("a");
-  if(KEY_CODES[keyCode] == "s")
+	}
+	if(KEY_CODES[keyCode] == "s"){
+		updatePlayerMovement("down");
     console.log("s");
-  if(KEY_CODES[keyCode] == "d")
+	}
+	if(KEY_CODES[keyCode] == "d"){
+		updatePlayerMovement("right");
     console.log("d");
+	}
   if(KEY_CODES[keyCode] == "q")
     camera.rotateY(0.01);
   if(KEY_CODES[keyCode] == "e")
     camera.rotateY(-0.01);
 
-  if(KEY_CODES[keyCode] == "space")
+	if(KEY_CODES[keyCode] == "space"){
+		shooting();
     console.log("space");
+	}
 };
 
 var renderer = new THREE.WebGLRenderer();
