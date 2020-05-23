@@ -53,35 +53,66 @@ let game_environment = {
 }
 
 let whoami = "redA";
+let heading =  {"x": 1, "y": 2, "z": 3};
+
+function updatePlayerMovement(direction){
+	// vel = calculatePlayerVel();
+	vel =  {"x": 1, "y": 2, "z": 3};
+	updatedPlayerData = {
+		"role": whoami, 
+		"vel": vel
+	}
+	socket.emit('movement', updatedPlayerData);
+}
+
+function shooting(){
+	let booleitVel = {
+		"x": game_environment[whoami]["pos"]["x"] + heading["x"], 
+		"y": game_environment[whoami]["pos"]["y"] + heading["y"], 
+		"z": game_environment[whoami]["pos"]["z"] + heading["z"]
+	};
+
+	updatedBooleitData = {
+		"owner": whoami, 
+		"vel": booleitVel
+	};
+	socket.emit('shooting', updatedBooleitData);
+}
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
-  if(KEY_CODES[keyCode] == "w"){
-    console.log("w");
-    game_environment[whoami].pos.x += 1;
-  }
-  if(KEY_CODES[keyCode] == "a"){
-    console.log("a");
-    game_environment[whoami].pos.y += 1;
-  }
-  if(KEY_CODES[keyCode] == "s"){
-    console.log("s");
-    game_environment[whoami].pos.x -= 1;
-  }
-  if(KEY_CODES[keyCode] == "d"){
-    console.log("d");
-    game_environment[whoami].pos.y -= 1;
-  }
   if(KEY_CODES[keyCode] == "q"){
     camera.rotateZ(0.01);
   }
   if(KEY_CODES[keyCode] == "e"){
     camera.rotateZ(-0.01);
   }
+	if(KEY_CODES[keyCode] == "w"){
+		updatePlayerMovement("up");
+    game_environment[whoami].pos.x += 1;
+    console.log("w");
+	}
+	if(KEY_CODES[keyCode] == "a"){
+		updatePlayerMovement("left");
+    game_environment[whoami].pos.y += 1;
+    console.log("a");
+	}
+	if(KEY_CODES[keyCode] == "s"){
+		updatePlayerMovement("down");
+    game_environment[whoami].pos.x -= 1;
+    console.log("s");
+	}
+	if(KEY_CODES[keyCode] == "d"){
+		updatePlayerMovement("right");
+    game_environment[whoami].pos.y -= 1;
+    console.log("d");
+	}
 
-  if(KEY_CODES[keyCode] == "space")
+	if(KEY_CODES[keyCode] == "space"){
+		shooting();
     console.log("space");
+	}
 };
 
 var renderer = new THREE.WebGLRenderer();

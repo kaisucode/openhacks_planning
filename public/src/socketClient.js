@@ -9,10 +9,3 @@ socket.on('disconnect', function(){
 	console.log("Disconnected from server");
 });
 
-var msg = "message from client";
-socket.emit('my message', msg);
-
-socket.on('chat message', function(msg){
-	console.log("Received" + msg)
-});
-
