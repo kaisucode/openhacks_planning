@@ -1,0 +1,27 @@
+{
+  "name": "openhacks",
+  "version": "1.0.0",
+  "description": "openhacks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kaisucode/openhacks_planning.git"
+  },
+  "keywords": [
+    "hackathon"
+  ],
+  "author": "walter",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kaisucode/openhacks_planning/issues"
+  },
+  "homepage": "https://github.com/kaisucode/openhacks_planning#readme",
+  "dependencies": {
+    "bootstrap": "^4.5.0",
+    "jquery": "^3.5.1",
+    "three": "^0.116.1"
+  }
+}
