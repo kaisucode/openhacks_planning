@@ -18,24 +18,29 @@ If a player is hit by a booleit, they lose a team life.
 The map layout is constantly changing as asteroids move around, affected by the players. 
 Players are incentivized to move around by objects like booleit boxees, and extra team lives.
 
-# random cool ideas
-magnetic boots, metal asteroids, can turn on and off stickiness
+Players have mass 1 player mass units (pmu).
+Asteroids vary in size, but not in density really, and have mass in the
+interval [5pmu, 10pmu] normally distributed, with mean 7.5pmu and standard
+deviation 1.2pmu.
+Despite this, in a weird change of physics, the asteroids have gravity fields surrounding them. 
+Interestingly, the players don't exert a equal and opposite force on the asteroids. 
+On the other hand, there is a concept of momentum in our game. In particular,
+if the player launches off of, or lands on an asteroid then momentum is
+conserved (momentum = sum of mass * velocity).
+Launching off of an asteroid is accomplished by a rechargeable rocket boost
+thing, which is just a really quick impulse thing. Force directed in the
+opposite direction to where the players head is pointing. 
+Recoil is a thing. If you shoot a whole bunch you can probably launch off of an
+asteroid. Shooting one will not be enough though, the asteroids gravity field
+will pull you back.
+In terms of items laying around the map, there are extra bulleit boxees, and
+even (1) extra team life, potentially there will be other upgrades later as well.
+In terms of bulleits, their initial velocity is determined by the player.
+However, they are affected by the gravity of asteroids. The bulleit will travel
+until hitting an asteroid or a player. 
+Finally, there is a sphere of "fire" enclosing the players in a confined area (you can hide but you can't run).
 
-note: you can have asteroids be affected by players landing on them and have
-gravity simultaneously as long as you dont care about physics.
-
-asteroids have gravity
-
-orbit them?
-
-projectiles affected
-
-sphere of fire to implement the bounding box (enclosing in?)
-
-stuff sitting around the map (incentive to move):
-amo boxes
-extra lives
-updgrades
-
-Note: direct sight lines dont' mean you hit someone, asteroids can block
+# "extra" features
+- modify bulleit velocity (would modify recoil amount too) 
+- damage dealing obstacles
 
