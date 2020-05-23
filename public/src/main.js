@@ -1,6 +1,6 @@
 const speed = 0.4;
 const lightSpeed = 0.03;
-const dim = 48;
+const dim = 100;
 const center = new THREE.Vector3(dim/2,dim/2,dim/2);
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
@@ -32,10 +32,10 @@ let game_environment = {
   "bluTeam": {
     "teamlives": 5
   },
-  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "bluA": { "booleits": 10, "pos": {"x": -10, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
-  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "redA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "redB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "bluA": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
+  "bluB": { "booleits": 10, "pos": {"x": 50, "y": 50, "z": 10}, "vel": {"x": 1, "y": 2, "z": 3} },
   "environment": {
     "asteroids": [
       {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4},
@@ -47,7 +47,7 @@ let game_environment = {
     ],
     "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
     "booleits": [
-      {"pos": {"x": 1, "y": 2, "z": 300}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7}
+      {"pos": {"x": 1, "y": 2, "z": 300}, "vel": {"x": 1, "y": 2, "z": 3}}
     ]
   }
 }
@@ -57,18 +57,28 @@ let whoami = "redA";
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
-  if(KEY_CODES[keyCode] == "w")
+  if(KEY_CODES[keyCode] == "w"){
     console.log("w");
-  if(KEY_CODES[keyCode] == "a")
+    game_environment[whoami].pos.x += 1;
+  }
+  if(KEY_CODES[keyCode] == "a"){
     console.log("a");
-  if(KEY_CODES[keyCode] == "s")
+    game_environment[whoami].pos.y += 1;
+  }
+  if(KEY_CODES[keyCode] == "s"){
     console.log("s");
-  if(KEY_CODES[keyCode] == "d")
+    game_environment[whoami].pos.x -= 1;
+  }
+  if(KEY_CODES[keyCode] == "d"){
     console.log("d");
-  if(KEY_CODES[keyCode] == "q")
-    camera.rotateY(0.01);
-  if(KEY_CODES[keyCode] == "e")
-    camera.rotateY(-0.01);
+    game_environment[whoami].pos.y -= 1;
+  }
+  if(KEY_CODES[keyCode] == "q"){
+    camera.rotateZ(0.01);
+  }
+  if(KEY_CODES[keyCode] == "e"){
+    camera.rotateZ(-0.01);
+  }
 
   if(KEY_CODES[keyCode] == "space")
     console.log("space");
@@ -77,14 +87,21 @@ function onDocumentKeyDown(event) {
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
+renderer.domElement.addEventListener("mousemove", evt=> {
+  var rect = renderer.domElement.getBoundingClientRect();
+  camera.rotation.y = Math.PI*(evt.clientX - rect.left)/WIDTH-Math.PI/2;
+  camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT-Math.PI/2;
+});
+renderer.domElement.id = "threejscanvas";
 document.body.appendChild( renderer.domElement );
+renderer.domElement.style.cursor = "crosshair";
 
 var scene = new THREE.Scene();
 
 let light = new THREE.AmbientLight(0xffffff);
 scene.add(light);
 
-let players = [];
+let players = {};
 for (let player in PLAYERS){
   let geometry = new THREE.BoxGeometry(1,1,1);
   let material = new THREE.MeshPhongMaterial({color: "#44aa88"});
@@ -97,8 +114,35 @@ for (let player in PLAYERS){
   cube.position.y = game_environment[PLAYERS[player]].pos.y;
   cube.position.z = game_environment[PLAYERS[player]].pos.z;
   scene.add(cube);
-  players.push(cube);
+  players[PLAYERS[player]] = cube;
 }
+
+let asteroids = [];
+for (let i in game_environment.environment.asteroids){
+  let asteroid = game_environment.environment.asteroids[i];
+  let geometry = new THREE.SphereGeometry(Math.pow(asteroid.mass/2, 3));
+  let material = new THREE.MeshPhongMaterial({color: "#ffffff"});
+  const cube = new THREE.Mesh(geometry, material);
+  cube.position.x = asteroid.pos.x;
+  cube.position.y = asteroid.pos.y;
+  cube.position.z = asteroid.pos.z;
+  scene.add(cube);
+  asteroids.push(cube);
+}
+
+let booleits = [];
+for (let i in game_environment.environment.booleits){
+  let projectile = game_environment.environment.booleits[i];
+  let geometry = new THREE.SphereGeometry(0.5);
+  let material = new THREE.MeshPhongMaterial({color: "#ff0000"});
+  const cube = new THREE.Mesh(geometry, material);
+  cube.position.x = projectile.pos.x;
+  cube.position.y = projectile.pos.y;
+  cube.position.z = projectile.pos.z;
+  scene.add(cube);
+  booleits.push(cube);
+}
+
 
 let ptLights = [];
 let ptLightBlobs = [];
@@ -143,24 +187,36 @@ function alekRandomWalk(i){
   ptLightBlobs[i].position.copy(ptLights[i].position);
 }
 
-function update_teamlives_display(){
+function update_HUD(){
   for(let i=0; i < game_environment.redTeam.teamlives; i++){
-      $("body").append(`<img style='position:absolute; top:0; left:${2*i}vw' src='assets/redLife.png'></img>`);
+      $("body").append(`<img style='position:absolute; top:1vh; left:${3.5*i}vw; width:3vw' src='assets/redLife.png'></img>`);
   }
   for(let i=0; i < game_environment.bluTeam.teamlives; i++){
-      $("body").append(`<img style='position:absolute; top:0; right:${2*i}vw' src='assets/bluLife.png'></img>`);
+      $("body").append(`<img style='position:absolute; top:1vh; right:${3.5*i}vw; width:3vw' src='assets/bluLife.png'></img>`);
+  }
+  if(whoami == "redA" || whoami == "redB"){
+    $("body").append(`<p style='position:absolute; top:3vh; left:0; color: white'>Booleits: ${game_environment[whoami].booleits}</p>`);
+    $("body").append(`<p style='position:absolute; top:5vh; left:0; color: white'>${whoami}</p>`);
+  }
+  if(whoami == "bluB" || whoami == "bluA"){
+    $("body").append(`<p style='position:absolute; top:3vh; right:0; color: white'>Booleits: ${whoami}</p>`);
+    $("body").append(`<p style='position:absolute; top:5vh; right:0; color: white'>Booleits: ${whoami}</p>`);
   }
 }
-update_teamlives_display();
+update_HUD();
 
-
-let playerPos = new THREE.Vector3(dim/2,dim/2,dim/2);
 
 function animate() {
 	requestAnimationFrame( animate );
-  camera.position.x = playerPos.x;
-  camera.position.y = playerPos.y;
-  camera.position.z = playerPos.z;
+  camera.position.x = game_environment[whoami].pos.x;
+  camera.position.y = game_environment[whoami].pos.y;
+  camera.position.z = game_environment[whoami].pos.z+10;
+
+  for(let player in players){
+    players[player].position.x = game_environment[player].pos.x;
+    players[player].position.y = game_environment[player].pos.y;
+    players[player].position.z = game_environment[player].pos.z;
+  }
 
   for(let i in ptLights){
     alekRandomWalk(i);
