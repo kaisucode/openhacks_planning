@@ -14,7 +14,25 @@ const KEY_CODES = {
   81: "q",
   69: "e"
 }
+
+// constants, exist in both files
+const MASS = {
+  "player": 1,
+  "booleits": 0.1,
+  "amoboxes": 1,
+  "extralife": 1
+};
+
+const RADIUS = {
+  "player": 1,
+  "booleits": 0.1,
+  "extralife": 1,
+  "amoboxes": 1
+}
 const PLAYERS = ["redA", "redB", "bluA", "bluB"];
+// constants, exist in both files
+
+
 
 var camera = new THREE.PerspectiveCamera( 75, WIDTH / HEIGHT, 1, 1000 );
 window.addEventListener('resize', function() {

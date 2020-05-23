@@ -13,7 +13,23 @@ app.get('/', function(req, res){
 	res.redirect("index.html");
 });
 
+
+// constants, exist in both files
+const MASS = {
+  "player": 1,
+  "booleits": 0.1,
+  "amoboxes": 1,
+  "extralife": 1
+};
+
+const RADIUS = {
+  "player": 1,
+  "booleits": 0.1,
+  "extralife": 1,
+  "amoboxes": 1
+}
 const PLAYERS = ["redA", "redB", "bluA", "bluB"];
+// constants, exist in both files
 
 let game_environment = {
   "redTeam": {
