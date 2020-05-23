@@ -1,4 +1,3 @@
-
 let port = 5000;
 
 let express = require('express'); // needs this library
@@ -43,21 +42,21 @@ let game_environment = {
   "bluA": { "booleits": 10, "pos": {"x": -10, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
   "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
   "environment": {
-    "asteroids": [
-      {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4, "r": 10},
-      {"pos": {"x": 1, "y": 300, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 6, "r": 40},
-      {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
-    ],
-    "amoboxes": [
-      {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}},
-    ],
+    "asteroids": {
+      "0": {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30},
+      "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
+    },
+    "amoboxes": {
+      "0": {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}}
+    },
     "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
-    "booleits": [
-      {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
-    ]
+    "booleits": {
+      "0": {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
+    }
   }
 }
 
+// IMPORTANT: to add a new asteroid or somehting you should do something like game_environment.environment.asteroids[Math.max(...Object.keys(game_environment.environment.asteroids))] = {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
 
 function sq (number) {
   return number * number;
@@ -130,8 +129,8 @@ io.sockets.on('connection', function(socket){
         else {
           game_environment[player].onPlanet = false;
 
-          let gP = (MASS.player*asteroid.mass)/(vecDiffMagSquared(asteroid.pos, game_environment[player].pos));
-          let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
+          let gP = (MASS.player*asteroid.mass)/(vecDiffMagSquared(game_environment[player].pos, asteroid.pos));
+          let unnormalizedThing = vecDiff(game_environment[player].pos, asteroid.pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
 
           addToVec(game_environment[player].vel, accel);

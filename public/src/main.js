@@ -86,19 +86,19 @@ document.addEventListener("keydown", (event) => { keysPressed[event.key] = true;
 function handleKeys() {
   if(game_environment[whoami]["onPlanet"]){
     if (keysPressed['w']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "up"});
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
       console.log("w");
     }
     if (keysPressed['a']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "left"});
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
       console.log("a");
     }
     if (keysPressed['s']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "down"});
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
       console.log("s");
     }
     if (keysPressed['d']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "right"});
+      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
       console.log("d");
     }
   }
@@ -112,16 +112,7 @@ function handleKeys() {
   if(keysPressed["e"]){
     camera.rotateZ(-0.01);
   }
-
-
 }
-
-
-
-
-
-
-
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor (0x000000, 1);
@@ -267,6 +258,7 @@ animate();
 setTimeout(()=>{
   socket.on('update', (new_game_environment)=>{
     game_environment = new_game_environment;
+    handleKeys();
   });
 }, 1000 );
 
