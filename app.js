@@ -12,52 +12,9 @@ app.get('/', function(req, res){
 	res.redirect("index.html");
 });
 
-
-// constants, exist in both files
-const MASS = {
-  "player": 1,
-  "booleits": 0.1,
-  "amoboxes": 1,
-  "extralife": 1
-};
-
-const RADIUS = {
-  "player": 0.5,
-  "booleits": 0.1,
-  "extralife": 1,
-  "amoboxes": 1
+function vec(x,y,z){
+  return {"x": x, "y": y, "z": z};
 }
-const PLAYERS = ["redA", "redB", "bluA", "bluB"];
-// constants, exist in both files
-
-let game_environment = {
-  "redTeam": {
-    "teamlives": 5
-  },
-  "bluTeam": {
-    "teamlives": 5
-  },
-  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "bluA": { "booleits": 10, "pos": {"x": -10, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
-  "environment": {
-    "asteroids": {
-      "0": {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30},
-      "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
-    },
-    "amoboxes": {
-      "0": {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}}
-    },
-    "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
-    "booleits": {
-      "0": {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
-    }
-  }
-}
-
-// IMPORTANT: to add a new asteroid or somehting you should do something like game_environment.environment.asteroids[Math.max(...Object.keys(game_environment.environment.asteroids))] = {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
-
 function sq (number) {
   return number * number;
 }
@@ -84,6 +41,55 @@ function normalizeVec(v){
 function vecDiffMagSquared(a, b){
   return vecMagSquared(vecDiff(a,b));
 }
+function vecToString(v){
+  return `${v.x.toFixed(3)}, ${v.y.toFixed(3)}, ${v.z.toFixed(3)}`;
+}
+
+
+// constants, exist in both files
+const MASS = {
+  "player": 1,
+  "booleits": 0.1,
+  "amoboxes": 1,
+  "extralife": 1
+};
+
+const RADIUS = {
+  "player": 0.5,
+  "booleits": 0.1,
+  "extralife": 1,
+  "amoboxes": 1
+}
+const PLAYERS = ["redA", "redB", "bluA", "bluB"];
+// constants, exist in both files
+
+let game_environment = {
+  "redTeam": {
+    "teamlives": 5
+  },
+  "bluTeam": {
+    "teamlives": 5
+  },
+  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": false },
+  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": false },
+  "bluA": { "booleits": 10, "pos": {"x": -10, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": false },
+  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": false },
+  "environment": {
+    "asteroids": {
+      "0": {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30},
+      "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
+    },
+    "amoboxes": {
+      "0": {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}}
+    },
+    "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
+    "booleits": {
+      "0": {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
+    }
+  }
+}
+
+// IMPORTANT: to add a new asteroid or somehting you should do something like game_environment.environment.asteroids[Math.max(...Object.keys(game_environment.environment.asteroids))] = {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
 
 io.sockets.on('connection', function(socket){
 	console.log("connected");
@@ -130,7 +136,7 @@ io.sockets.on('connection', function(socket){
           game_environment[player].onPlanet = false;
 
           let gP = (MASS.player*asteroid.mass)/(vecDiffMagSquared(game_environment[player].pos, asteroid.pos));
-          let unnormalizedThing = vecDiff(game_environment[player].pos, asteroid.pos);
+          let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
 
           addToVec(game_environment[player].vel, accel);
@@ -140,6 +146,8 @@ io.sockets.on('connection', function(socket){
       }
     }
 
+    let player = "redA";
+    console.log(`${player} vel: ${vecToString(game_environment[player].vel)}`);
     socket.emit("update", game_environment);
     setTimeout(update, 100);
   };
