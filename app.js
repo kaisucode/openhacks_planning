@@ -13,6 +13,7 @@ app.get('/', function(req, res){
 	res.redirect("index.html");
 });
 
+const PLAYERS = ["redA", "redB", "bluA", "bluB"];
 
 let game_environment = {
   "redTeam": {
@@ -36,11 +37,10 @@ let game_environment = {
     ],
     "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
     "booleits": [
-      {"pos": {"x": 1, "y": 2, "z": 300}, "vel": {"x": 1, "y": 2, "z": 3}}
+      {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
     ]
   }
 }
-
 
 io.sockets.on('connection', function(socket){
 	console.log("connected");
@@ -54,9 +54,6 @@ io.sockets.on('connection', function(socket){
 		let player = playerMovement["role"];
 		game_environment[player]["vel"] = playerMovement["vel"];
 		console.log(`player ${player} moved`);
-		// checkForAsteroidCollisons();
-		// checkForAmoboxCollisons();
-		// checkForExtralifeCollisons();
 	});
 
 	socket.on('shooting', function(action){
@@ -73,8 +70,7 @@ io.sockets.on('connection', function(socket){
 		console.log(game_environment["environment"]["booleits"]);
 		game_environment["environment"]["booleits"].push(newBooleit);
 	});
-
-})
+});
 
 // function checkForAsteroidCollisions(){
 //   if playerCollidesWith
@@ -82,6 +78,36 @@ io.sockets.on('connection', function(socket){
 // }
 
 // Running timeout for bullet path and asteroid path and player path
+// checkForAsteroidCollisons();
+// checkForAmoboxCollisons();
+// checkForExtralifeCollisons();
+
+function sq (number) {
+  return number * number;
+}
+function vecMagSquared(v){
+  return sq(v.x) + sq(v.y) + sq(v.z);
+}
+function vecDiff(a, b){
+  return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
+}
+function vecDiffMagSquared(a, b){
+  return vecMagSquared(vecDiff(a,b));
+}
+
+setTimeout(update, 1000);
+function update(){
+  for(p in PLAYERS){
+    let player = PLAYERS[p];
+    for(i in game_environment.environment.asteroids){
+      let asteroid = game_environment.environment.asteroids[i];
+      if(vecDiffMagSquared(player, asteroid) <= sq()){
+      }
+  }
+  setTimeout(update, 1000);
+};
+
+
 
 
 

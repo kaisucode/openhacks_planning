@@ -47,7 +47,7 @@ let game_environment = {
     ],
     "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": {"x": 1, "y": 2, "z": 3}},
     "booleits": [
-      {"pos": {"x": 1, "y": 2, "z": 300}, "vel": {"x": 1, "y": 2, "z": 3}}
+      {"pos": {"x": 1, "y": 2, "z": 30}, "vel": {"x": 1, "y": 2, "z": 3}}
     ]
   }
 }
@@ -152,13 +152,13 @@ for (let i in game_environment.environment.asteroids){
 
 let booleits = [];
 for (let i in game_environment.environment.booleits){
-  let projectile = game_environment.environment.booleits[i];
-  let geometry = new THREE.SphereGeometry(0.5);
+  let booleit = game_environment.environment.booleits[i];
+  let geometry = new THREE.SphereGeometry(1);
   let material = new THREE.MeshPhongMaterial({color: "#ff0000"});
   const cube = new THREE.Mesh(geometry, material);
-  cube.position.x = projectile.pos.x;
-  cube.position.y = projectile.pos.y;
-  cube.position.z = projectile.pos.z;
+  cube.position.x = booleit.pos.x;
+  cube.position.y = booleit.pos.y;
+  cube.position.z = booleit.pos.z;
   scene.add(cube);
   booleits.push(cube);
 }
