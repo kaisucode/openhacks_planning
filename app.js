@@ -28,9 +28,9 @@ let game_environment = {
   "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "onPlanet": false },
   "environment": {
     "asteroids": [
-      {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4},
-      {"pos": {"x": 1, "y": 300, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 6},
-      {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7}
+      {"pos": {"x": 1, "y": 200, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 4, "r": 10},
+      {"pos": {"x": 1, "y": 300, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 6, "r": 40},
+      {"pos": {"x": 1, "y": 400, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
     ],
     "amoboxes": [
       {"pos": {"x": 1, "y": 2, "z": 100}, "vel": {"x": 1, "y": 2, "z": 3}},
@@ -101,7 +101,7 @@ function update(){
     let player = PLAYERS[p];
     for(i in game_environment.environment.asteroids){
       let asteroid = game_environment.environment.asteroids[i];
-      if(vecDiffMagSquared(player, asteroid) <= sq()){
+      if(vecDiffMagSquared(player, asteroid) <= sq(asteroid.radius) + sq()){
       }
   }
   setTimeout(update, 1000);
