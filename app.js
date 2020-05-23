@@ -23,7 +23,7 @@ const MASS = {
 };
 
 const RADIUS = {
-  "player": 1,
+  "player": 0.5,
   "booleits": 0.1,
   "extralife": 1,
   "amoboxes": 1
@@ -104,26 +104,57 @@ function sq (number) {
 function vecMagSquared(v){
   return sq(v.x) + sq(v.y) + sq(v.z);
 }
+function vecMag(v){
+  return Math.sqrt(vecMagSquared(v));
+}
 function vecDiff(a, b){
   return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
+}
+function addToVec(a, b){
+  a.x += b.x;
+  a.y += b.y;
+  a.z += b.z;
+}
+function vecMult(v, k){
+  return {"x": v.x*k, "y": v.y*k, "z": v.z*k};
+}
+function normalizeVec(v){
+  return vecMult(v, 1/vecMagSquared(v));
 }
 function vecDiffMagSquared(a, b){
   return vecMagSquared(vecDiff(a,b));
 }
 
-setTimeout(update, 1000);
+setTimeout(update, 100);
 function update(){
   for(p in PLAYERS){
     let player = PLAYERS[p];
     for(i in game_environment.environment.asteroids){
       let asteroid = game_environment.environment.asteroids[i];
-      if(vecDiffMagSquared(player, asteroid) <= sq(asteroid.radius) + sq()){
+      if(vecDiffMagSquared(player, asteroid) <= sq(asteroid.radius) + sq(RADIUS.player)){
+        game_environment[player].onPlanet = true;
+
+        for(let i = 0; i < 100; i++)
+          console.log("AYYYYAYYAYAYYAYAYAYAYAYAYAYYY YAYAYAYAYAYAYYAYAYAYY ON PLANNNNEETTE");
       }
+      else {
+        game_environment[player].onPlanet = false;
+
+        let gP = (MASS.player*asteroid.mass)/(vecDiffMagSquared(asteroid.pos, game_environment[player].pos));
+        let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
+        let accel = vecMult(normalizeVec(unnormalizedThing), gP);
+
+        addToVec(game_environment[player].vel, accel);
+      }
+
+      console.log(game_environment[player].pos);
+      addToVec(game_environment[player].pos, game_environment[player].vel);
+      console.log(game_environment[player].pos);
+    }
   }
-  setTimeout(update, 1000);
+
+
+  setTimeout(update, 100);
 };
-
-
-
 
 
