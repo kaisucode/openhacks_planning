@@ -67,14 +67,14 @@ function updatePlayerMovement(direction){
 
 function shooting(){
 	let booleitVel = {
-		"x": game_environment[whoami]["pos"]["x"] + header["x"], 
-		"y": game_environment[whoami]["pos"]["y"] + header["y"], 
-		"z": game_environment[whoami]["pos"]["z"] + header["z"]
+		"x": game_environment[whoami]["pos"]["x"] + heading["x"], 
+		"y": game_environment[whoami]["pos"]["y"] + heading["y"], 
+		"z": game_environment[whoami]["pos"]["z"] + heading["z"]
 	};
 
 	updatedBooleitData = {
 		"owner": whoami, 
-		"vel" =  booleitVel
+		"vel": booleitVel
 	};
 	socket.emit('shooting', updatedBooleitData);
 }

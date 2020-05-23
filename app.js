@@ -51,16 +51,19 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('movement', function(playerMovement){
+		console.log("hai");
 		let player = playerMovement["role"];
 		game_environment[player]["vel"] = playerMovement["vel"];
+		console.log(`player ${player} moved`);
 		// checkForAsteroidCollisons();
 		// checkForAmoboxCollisons();
 		// checkForExtralifeCollisons();
 	});
 
-	socket.on('shooting', function(action)){
+	socket.on('shooting', function(action){
 		let owner = action["owner"];
 		let vel = action["vel"];
+		console.log(`player ${owner} shot a booleit`);
 
 		newBooleit = {
 			"pos": game_environment[owner]["pos"], 
@@ -68,8 +71,9 @@ io.sockets.on('connection', function(socket){
 		};
 
 		game_environment[owner]["booleits"]--;
-		game_environment["booleits"].push(newBooleit);
-	}
+		console.log(game_environment["environment"]["booleits"]);
+		game_environment["environment"]["booleits"].push(newBooleit);
+	});
 
 })
 
