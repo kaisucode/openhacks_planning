@@ -61,24 +61,19 @@ function handleKeys() {
   if(game_environment[whoami]["onPlanet"]){
     if (keysPressed['w']) {
       socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
-      console.log("w");
     }
     if (keysPressed['a']) {
       socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
-      console.log("a");
     }
     if (keysPressed['s']) {
       socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
-      console.log("s");
     }
     if (keysPressed['d']) {
       socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
-      console.log("d");
     }
   }
   if(keysPressed[" "]){
     shooting();
-    console.log("space");
   }
   if(keysPressed["q"]){
     camera.rotateZ(0.01);
@@ -95,15 +90,14 @@ renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
 canvas.addEventListener("mousemove", evt=> {
   var rect = canvas.getBoundingClientRect();
-  camera.rotation.y = -Math.PI*(evt.clientX - rect.left)/WIDTH-Math.PI/2;
-  camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT-Math.PI/2;
+  camera.rotation.y = Math.PI/2 - Math.PI*(evt.clientX - rect.left)/WIDTH;
+  camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT - Math.PI/2;
 });
 canvas.id = "threejscanvas";
 document.body.appendChild( canvas );
 
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-canvas.requestPointerLock()
-
+canvas.requestPointerLock();
 
 canvas.style.cursor = "none";
 var scene = new THREE.Scene();
@@ -117,7 +111,7 @@ let booleits = [];
 
 function initGameEnv(){
   for (let player in PLAYERS){
-    let geometry = new THREE.BoxGeometry(1,1,1);
+    let geometry = new THREE.BoxGeometry(RADIUS.player*2, RADIUS.player*2, RADIUS.player*2);
     let material = new THREE.MeshPhongMaterial({color: "#44aa88"});
     const cube = new THREE.Mesh(geometry, material);
     cube.rotation.x = Math.random()*Math.PI*2;
@@ -133,7 +127,7 @@ function initGameEnv(){
 
   for (let i in game_environment.environment.asteroids){
     let asteroid = game_environment.environment.asteroids[i];
-    let geometry = new THREE.SphereGeometry(Math.pow(asteroid.mass/2, 3));
+    let geometry = new THREE.SphereGeometry(asteroid.r);
     let material = new THREE.MeshPhongMaterial({color: "#ffffff"});
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = asteroid.pos.x;
@@ -145,7 +139,7 @@ function initGameEnv(){
 
   for (let i in game_environment.environment.booleits){
     let booleit = game_environment.environment.booleits[i];
-    let geometry = new THREE.SphereGeometry(1);
+    let geometry = new THREE.SphereGeometry(RADIUS.booleits);
     let material = new THREE.MeshPhongMaterial({color: "#ff0000"});
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = booleit.pos.x;
