@@ -42,7 +42,6 @@ let game_environment = {
 }
 
 
->>>>>>> c9f66d4152313fce8532522787441dd2c4c867d2
 io.sockets.on('connection', function(socket){
 	console.log("connected");
 	socket.emit("chat message", "GREETINGS FROM SERVER")
