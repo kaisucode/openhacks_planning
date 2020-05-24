@@ -19,7 +19,6 @@ window.addEventListener('resize', function() {
 const urlParams = new URLSearchParams(window.location.search);
 let whoami = urlParams.get("whoami") || "spectator";
 
-
 function generateBooleit(){
 	let heading = camera.getWorldDirection();
 
@@ -146,6 +145,9 @@ function initGameEnv(){
     players[PLAYERS[player]] = cube;
   }
 
+  players[whoami].add(camera);
+  camera.position.set( 0, 0, 0 );
+
   for (let i in game_environment.environment.asteroids){
     let asteroid = game_environment.environment.asteroids[i];
     let geometry = new THREE.SphereGeometry(asteroid.r);
@@ -237,9 +239,6 @@ function update_HUD(){
 
 function animate() {
 	requestAnimationFrame( animate );
-  camera.position.x = game_environment[whoami].pos.x;
-  camera.position.y = game_environment[whoami].pos.y;
-  camera.position.z = game_environment[whoami].pos.z+10;
 
   for(let player in players){
     copyBtoA(players[player].position, game_environment[player].pos);
