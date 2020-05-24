@@ -7,7 +7,7 @@ var MASS = {
 
 var RADIUS = {
   "player": 0.5,
-  "booleits": 5,
+  "booleits": 0.4,
   "extralife": 1,
   "amoboxes": 1
 };
