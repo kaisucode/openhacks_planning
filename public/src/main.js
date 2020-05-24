@@ -91,11 +91,24 @@ let canvas = renderer.domElement;
 
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
-canvas.addEventListener("mousemove", evt=> {
-  var rect = canvas.getBoundingClientRect();
-  camera.rotation.y = Math.PI/2 - Math.PI*(evt.clientX - rect.left)/WIDTH;
-  camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT - Math.PI/2;
-});
+
+canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+
+canvas.addEventListener("mousemove", (e) => {
+  camera.rotation.y += -e.movementX/200;
+  camera.rotation.x += e.movementY/200;
+  console.log(`mouseX -> ${e.movementX}, mouseY -> ${e.movementY}`);
+}, false);
+
+
+canvas.onclick = function() {
+  canvas.requestPointerLock();
+};
+
+
+
+
+
 canvas.id = "threejscanvas";
 document.body.appendChild( canvas );
 
@@ -242,6 +255,7 @@ socket.on('update', (new_game_environment)=>{
     gameenvLoaded = true;
     initGameEnv();
     animate();
+
   }
 });
 
