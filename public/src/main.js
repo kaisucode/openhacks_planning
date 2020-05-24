@@ -242,9 +242,10 @@ function animate() {
   camera.position.z = game_environment[whoami].pos.z+10;
 
   for(let player in players){
-    players[player].position.x = game_environment[player].pos.x;
-    players[player].position.y = game_environment[player].pos.y;
-    players[player].position.z = game_environment[player].pos.z;
+    copyBtoA(players[player].position, game_environment[player].pos);
+  }
+  for(let booleit in booleits){
+    copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
   }
 
   for(let i in ptLights){

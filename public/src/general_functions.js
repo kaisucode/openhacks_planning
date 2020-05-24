@@ -14,6 +14,12 @@ var RADIUS = {
 
 var PLAYERS = ["redA", "redB", "bluA", "bluB"];
 
+function copyBtoA(a, b){
+  a.x = b.x;
+  a.y = b.y;
+  a.z = b.z;
+}
+
 function vec(x,y,z){
   return {"x": x, "y": y, "z": z};
 }
