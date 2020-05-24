@@ -300,7 +300,9 @@ function animate() {
 
 socket.on("delBooleitFromScene", (booleitID)=>{
 	scene.remove(booleits[booleitID]);
+	delete booleits[booleitID];
 	animate();
+	console.log("removed booleit from scene");
 });
 
 socket.on('update', (new_game_environment)=>{

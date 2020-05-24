@@ -99,23 +99,25 @@ io.sockets.on('connection', function(socket){
 	socket.on('playerMovementOnPlanet', function(playerMovement){
 		let player_name = playerMovement.role;
     let player = game_environment[player_name];
-    let asteroid = game_environment.environment.asteroids[player.onPlanet];
+		if(player.onPlanet != "-1"){
+			let asteroid = game_environment.environment.asteroids[player.onPlanet];
 
-    let angles = carToSph(asteroid, player);
-    if(playerMovement.direction == "up"){
-      angles.phi -= 0.1;
-    }
-    if(playerMovement.direction == "left"){
-      angles.theta -= 0.1;
-    }
-    if(playerMovement.direction == "down"){
-      angles.phi += 0.1;
-    }
-    if(playerMovement.direction == "right"){
-      angles.theta += 0.1;
-    }
+			let angles = carToSph(asteroid, player);
+			if(playerMovement.direction == "up"){
+				angles.phi -= 0.1;
+			}
+			if(playerMovement.direction == "left"){
+				angles.theta -= 0.1;
+			}
+			if(playerMovement.direction == "down"){
+				angles.phi += 0.1;
+			}
+			if(playerMovement.direction == "right"){
+				angles.theta += 0.1;
+			}
 
-    copyBtoA(player.pos, sphToCar(angles, asteroid, player));
+			copyBtoA(player.pos, sphToCar(angles, asteroid, player));
+		}
   });
 
   socket.on("requestRolesTaken", function(){
@@ -178,8 +180,8 @@ io.sockets.on('connection', function(socket){
       for(let ai in game_environment.environment.asteroids){
         let asteroid = game_environment.environment.asteroids[ai];
         if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
-          delete game_environment.environment.booleits[bi];
 					socket.emit("delBooleitFromScene", bi);
+          delete game_environment.environment.booleits[bi];
           break;
         }
       }
@@ -187,8 +189,8 @@ io.sockets.on('connection', function(socket){
         let player = game_environment[PLAYERS[pi]];
         if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
           // you got hit notification? @KEVIN
-          delete game_environment.environment.booleits[bi];
 					socket.emit("delBooleitFromScene", bi);
+          delete game_environment.environment.booleits[bi];
           if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){
             game_environment.redTeam.teamlives -= 1;
           }
@@ -198,10 +200,11 @@ io.sockets.on('connection', function(socket){
           break;
         }
       }
-			// if(!booleitWithinBounds(game_environment.environment.booleits[bi].pos)){
-      //     delete game_environment.environment.booleits[bi];
-			//     socket.emit("delBooleitFromScene", bi);
-			// }
+			if(!booleitWithinBounds(booleit.pos)){
+				socket.emit("delBooleitFromScene", bi);
+				delete game_environment.environment.booleits[bi];
+				break;
+			}
     }
 
     socket.emit("update", game_environment);
