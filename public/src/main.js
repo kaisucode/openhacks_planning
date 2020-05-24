@@ -81,6 +81,10 @@ function handleKeys() {
     if(keysPressed["e"]){
       camera.rotateZ(-0.01);
     }
+    if(keysPressed["p"]){
+			console.log("hai");
+			socket.emit("reposition", {"floo": "says hai"});
+    }
   }
   else{ // is spectator
     if (keysPressed['w']) {
