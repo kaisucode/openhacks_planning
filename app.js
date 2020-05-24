@@ -99,16 +99,10 @@ io.sockets.on('connection', function(socket){
 
   socket.on('shooting', function(action){
     let owner = action["owner"];
-    let vel = action["vel"];
-
-    newBooleit = {
-      "pos": game_environment[owner]["pos"], 
-      "vel": vel
-    };
 
 		newBooleit = {
-			"pos": game_environment[owner]["pos"], 
-			"vel": vel
+			"pos": [...game_environment[owner]["pos"]], 
+			"vel": action["vel"]
 		};
 
 		game_environment[owner]["booleits"]--;
@@ -147,13 +141,12 @@ io.sockets.on('connection', function(socket){
           addToVec(game_environment[player].vel, accel);
         }
 
-        addToVec(game_environment[player].pos, game_environment[player].vel);
+        // addToVec(game_environment[player].pos, game_environment[player].vel);
       }
     }
 
 		for(i in game_environment.environment.booleits){
-			addToVec(game_environment.environment.booleits[i].pos, vecMult(game_environment.environment.booleits[i].vel, 0.01));
-
+			addToVec(game_environment.environment.booleits[i].pos, vecMult(game_environment.environment.booleits[i].vel, -0.1));
 
 		}
 
