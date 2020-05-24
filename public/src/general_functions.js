@@ -1,3 +1,19 @@
+var MASS = {
+  "player": 1,
+  "booleits": 0.1,
+  "amoboxes": 1,
+  "extralife": 1
+};
+
+var RADIUS = {
+  "player": 0.5,
+  "booleits": 5,
+  "extralife": 1,
+  "amoboxes": 1
+};
+
+var PLAYERS = ["redA", "redB", "bluA", "bluB"];
+
 function vec(x,y,z){
   return {"x": x, "y": y, "z": z};
 }
@@ -18,7 +34,7 @@ function addToVec(a, b){
   a.y += b.y;
   a.z += b.z;
 }
-function multToVec(v, k){
+function scaleVec(v, k){
   v.x *= k;
   v.y *= k;
   v.z *= k;
@@ -37,19 +53,30 @@ function vecToString(v){
   return `${v.x.toFixed(3)}, ${v.y.toFixed(3)}, ${v.z.toFixed(3)}`;
 }
 
-const MASS = {
-  "player": 1,
-  "booleits": 0.1,
-  "amoboxes": 1,
-  "extralife": 1
-};
-
-const RADIUS = {
-  "player": 0.5,
-  "booleits": 5,
-  "extralife": 1,
-  "amoboxes": 1
+function vecToVector3(v){
+  return new Vector3(v.x, v.y, v.z);
 }
-const PLAYERS = ["redA", "redB", "bluA", "bluB"];
 
+function Vector3ToVec(v){
+  return {"x": v.x, "y": v.y, "z": v.z};
+}
+
+function carToSph(v, asteroid, player){
+  let xRel = player.pos.x-asteroid.pos.x;
+  let yRel = player.pos.y-asteroid.pos.y;
+  let zRel = player.pos.z-asteroid.pos.z;
+
+  return {"theta": Math.atan(Math.sqrt(sq(x)+sq(y))/z), "phi": Math.atan(yRel/xRel)};
+}
+
+function sphToCar(v, asteroid, player){
+  let r = asteroid.r + RADIUS.player; 
+  let x = r*Math.sin(v.theta)*Math.cos(v.phi);
+  let y = r*Math.sin(v.theta)*Math.sin(v.phi);
+  let z = r*Math.cos(v.theta);
+
+  let orient = vecDiff(player.position, asteroid.position);
+
+  return vec(x+asteroid.pos.x, y+asteroid.pos.y, z+asteroid.pos.z);
+}
 

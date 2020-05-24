@@ -4,7 +4,7 @@ const dim = 100;
 const center = new THREE.Vector3(dim/2,dim/2,dim/2);
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
-const PLAYER_R = 0.5;
+const PLAYER_R = 2;
 const ASTEROID_R = 10;
 
 var camera = new THREE.PerspectiveCamera( 75, WIDTH / HEIGHT, 1, 1000 );
@@ -69,6 +69,9 @@ function animate() {
 }
 animate();
 
+function vecDiff(a, b){
+  return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
+}
 
 function carToSph(v){
 	let xRel = player.pos.x-asteroid.pos.x;
@@ -76,10 +79,6 @@ function carToSph(v){
 	let zRel = player.pos.z-asteroid.pos.z;
 
 	return {"theta": Math.atan(Math.sqrt(sq(x)+sq(y))/z), "phi": Math.atan(yRel/xRel)};
-}
-
-function vecDiff(a, b){
-  return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
 }
 
 function sphToCar(v){
@@ -95,11 +94,30 @@ function sphToCar(v){
   player.position.x = x + asteroid.position.x;
   player.position.y = y + asteroid.position.y;
   player.position.z = z + asteroid.position.z;
+
+
+  var parent = new THREE.Object3D();
+  scene.add( parent );
+
+  var stick = new THREE.Object3D();
+  var point = new THREE.Vector3( x, y, z );
+  stick.lookAt( point );
+  parent.add( stick );
+
+  //var geometry = new THREE.CubeGeometry( 25, 25, 25, 1, 1, 1 );
+  scene.remove(player)
+  let geometry = new THREE.BoxGeometry(PLAYER_R*2, PLAYER_R*2, PLAYER_R*2);
+  let material = new THREE.MeshPhongMaterial({color: "#44aa88"});
+  var mesh = new THREE.Mesh( geometry, material );
+  mesh.position.set( 0, 0, r );
+  stick.add( mesh );
+
 }
 
 function duck(a,b){
   return a+b;
 }
+
 
 // function sphToCar(v){
 // 	let r = asteroid.r + RADIUS.player

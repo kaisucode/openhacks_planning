@@ -71,7 +71,7 @@ document.addEventListener("keyup", (event) => { keysPressed[event.key] = false; 
 document.addEventListener("keydown", (event) => { keysPressed[event.key] = true; }, false);
 function handleKeys() {
   if(whoami != "spectator"){
-    if(game_environment[whoami]["onPlanet"]){
+    if(game_environment[whoami]["onPlanet"] != -1){
       if (keysPressed['w']) {
         socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
       }
@@ -110,11 +110,19 @@ renderer.setSize(WIDTH, HEIGHT);
 
 //handle mouse movement
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-canvas.addEventListener("mousemove", (e) => {
+canvas.addEventListener("mousemove", cameraLook, false);
+
+function cameraLook(e) {
   camera.rotation.y += -e.movementX/200;
   camera.rotation.x += e.movementY/200;
-  // console.log(`mouseX -> ${e.movementX}, mouseY -> ${e.movementY}`);
-}, false);
+
+  // if(game_environment[whoami].onPlanet == "-1"){
+  //   let planetNormal = vecDiff(, game_environment[whoami].pos) 
+  // }
+}
+
+
+
 canvas.onclick = function() {
   canvas.requestPointerLock();
 };
