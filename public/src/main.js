@@ -299,6 +299,11 @@ function animate() {
 	renderer.render( scene, camera );
 }
 
+socket.on("delBooleitFromScene", (booleitID)=>{
+	scene.remove(booleits[booleitID]);
+	animate();
+});
+
 socket.on('update', (new_game_environment)=>{
   game_environment = new_game_environment;
   handleKeys();
