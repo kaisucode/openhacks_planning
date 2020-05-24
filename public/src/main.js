@@ -230,18 +230,23 @@ function initGameEnv(){
     camera.position.y = players[whoami].position.y+10;
     camera.position.z = players[whoami].position.z+10;
     camera.lookAt(players[whoami].position);
-
-    camControls = new THREE.FirstPersonControls(camera, canvas);
-    camControls.lookSpeed = 0.1;
-    camControls.movementSpeed = 20;
-    camControls.noFly = true;
-    camControls.lookVertical = true;
-    camControls.constrainVertical = true;
-    camControls.verticalMin = 1.0;
-    camControls.verticalMax = 2.0;
-    camControls.lon = -150;
-    camControls.lat = 120;
   }
+  else {
+    camera.position.x = spectatorPos.x+10;
+    camera.position.y = spectatorPos.y+10;
+    camera.position.z = spectatorPos.z+10;
+    camera.lookAt(spectatorPos);
+  }
+  camControls = new THREE.FirstPersonControls(camera, canvas);
+  camControls.lookSpeed = 0.1;
+  camControls.movementSpeed = 0;
+  camControls.noFly = true;
+  camControls.lookVertical = true;
+  camControls.constrainVertical = true;
+  camControls.verticalMin = 1.0;
+  camControls.verticalMax = 2.0;
+  camControls.lon = -150;
+  camControls.lat = 120;
 
 }
 
