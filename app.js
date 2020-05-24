@@ -1,4 +1,9 @@
 
+
+var fs = require('fs');
+eval(fs.readFileSync('public/src/general_functions.js')+'');
+let port = 5000;
+
 let startGame = true;
 // By default startGame is false; will be toggled to true when four users log in
 // This pauses the update sequence until the game starts
@@ -14,9 +19,6 @@ console.log(`server running on port ${port}`);
 app.get('/', function(req, res){
 	res.redirect("index.html");
 });
-
-var fs = require('fs');
-eval(fs.readFileSync('public/src/general_functions.js')+'');
 
 
 let game_environment = {
