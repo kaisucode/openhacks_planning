@@ -151,7 +151,12 @@ io.sockets.on('connection', function(socket){
       }
     }
 
-    let player = "redA";
+		for(i in game_environment.environment.booleits){
+			addToVec(game_environment.environment.booleits[i].pos, vecMult(game_environment.environment.booleits[i].vel, 0.01));
+
+
+		}
+
     socket.emit("update", game_environment);
     setTimeout(update, 100);
   };

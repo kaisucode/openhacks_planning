@@ -18,46 +18,29 @@ window.addEventListener('resize', function() {
 
 const urlParams = new URLSearchParams(window.location.search);
 let whoami = urlParams.get("whoami") || "spectator";
-let heading =  {"x": 1, "y": 2, "z": 3};
+
 
 function generateBooleit(){
-	let booleitVel = {
-		"x": game_environment[whoami]["pos"]["x"] + heading["x"], 
-		"y": game_environment[whoami]["pos"]["y"] + heading["y"], 
-		"z": game_environment[whoami]["pos"]["z"] + heading["z"]
-	};
-
+	let heading = camera.getWorldDirection();
 
 	updatedBooleitData = {
 		"owner": whoami, 
-		"vel": booleitVel
+		"vel": heading
 	};
 	socket.emit('shooting', updatedBooleitData);
 
 	newBooleit = {
 		"pos": game_environment[whoami]["pos"], 
-		"vel": booleitVel
+		"vel": heading
 	};
-
-	// update game env on local as well
-	game_environment[whoami]["booleits"]--;
-	game_environment.environment.booleits[Math.max(...Object.keys(game_environment.environment.booleits))+1] = newBooleit;
-
-	renderNewBooleit();
-}
-
-
-function renderNewBooleit(){
-	let i = Object.keys(game_environment.environment.booleits).length-1;
-	let booleit = game_environment.environment.booleits[i];
-
+	let i = Math.max(...Object.keys(game_environment.environment.booleits))+1;
 	let geometry = new THREE.SphereGeometry(RADIUS.booleits);
 
 	let material = new THREE.MeshPhongMaterial({color: "pink"});
 	const cube = new THREE.Mesh(geometry, material);
-	cube.position.x = booleit.pos.x;
-	cube.position.y = booleit.pos.y;
-	cube.position.z = booleit.pos.z;
+	cube.position.x = game_environment[whoami]["pos"]["x"];
+	cube.position.y = game_environment[whoami]["pos"]["y"];
+	cube.position.z = game_environment[whoami]["pos"]["z"];
 	scene.add(cube);
 	booleits[i] = cube;
   update_HUD();
