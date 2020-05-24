@@ -9,7 +9,7 @@ let game_environment;
 
 // constants, exist in both files
 const MASS = {
-  "player": 1,
+  "player": 0.1,
   "booleits": 0.1,
   "amoboxes": 1,
   "extralife": 1
@@ -88,18 +88,48 @@ let canvas = renderer.domElement;
 
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
-canvas.addEventListener("mousemove", evt=> {
-  var rect = canvas.getBoundingClientRect();
-  camera.rotation.y = Math.PI/2 - Math.PI*(evt.clientX - rect.left)/WIDTH;
-  camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT - Math.PI/2;
-});
+// canvas.addEventListener("mousemove", evt=> {
+//   var rect = canvas.getBoundingClientRect();
+//   camera.rotation.y = - Math.PI/2 + Math.PI*(evt.clientX - rect.left)/WIDTH;
+//   camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT - Math.PI/2;
+// });
+canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+
+document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
+
+// function onlyMoveWhenFocused() {
+//   // let cCanvas = document.querySelector('canvas');
+//   if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
+//     console.log('The pointer lock status is now locked');
+    
+//   } else {
+//     console.log('The pointer lock status is now unlocked');  
+//     document.removeEventListener("mousemove", handleMouse, false);
+//   }
+// }
+
+canvas.addEventListener("mousemove", (e) => {
+  camera.rotation.y += -e.movementX/200;
+  camera.rotation.x += e.movementY/200;
+  console.log(`mouseX -> ${e.movementX}, mouseY -> ${e.movementY}`);
+}, false);
+
+
+canvas.onclick = function() {
+  canvas.requestPointerLock();
+};
+
+
+
+
+
 canvas.id = "threejscanvas";
 document.body.appendChild( canvas );
 
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 canvas.requestPointerLock();
 
-canvas.style.cursor = "none";
+// canvas.style.cursor = "none";
 var scene = new THREE.Scene();
 
 let light = new THREE.AmbientLight(0xffffff);
@@ -239,6 +269,7 @@ socket.on('update', (new_game_environment)=>{
     gameenvLoaded = true;
     initGameEnv();
     animate();
+
   }
 });
 
