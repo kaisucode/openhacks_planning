@@ -124,8 +124,8 @@ let light = new THREE.AmbientLight(0xffffff);
 scene.add(light);
 
 let players = {};
-let asteroids = [];
-let booleits = [];
+let asteroids = {};
+let booleits = {};
 
 function initGameEnv(){
   for (let player in PLAYERS){
@@ -152,7 +152,7 @@ function initGameEnv(){
     cube.position.y = asteroid.pos.y;
     cube.position.z = asteroid.pos.z;
     scene.add(cube);
-    asteroids.push(cube);
+    asteroids[i] = cube;
   }
 
   for (let i in game_environment.environment.booleits){
@@ -164,7 +164,7 @@ function initGameEnv(){
     cube.position.y = booleit.pos.y;
     cube.position.z = booleit.pos.z;
     scene.add(cube);
-    booleits.push(cube);
+    booleits[i] = cube;
   }
 
   update_HUD();
