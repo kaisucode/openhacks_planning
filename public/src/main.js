@@ -245,7 +245,9 @@ function animate() {
     copyBtoA(players[player].position, game_environment[player].pos);
   }
   for(let booleit in booleits){
-    copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
+    if(game_environment.environment.booleits[booleit]){
+      copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
+    }
   }
 
   for(let i in ptLights){
