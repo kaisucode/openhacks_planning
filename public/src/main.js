@@ -1,5 +1,4 @@
-const speed = 0.4;
-const lightSpeed = 0.03;
+const lightSpeed = 0.3;
 
 const dim = 500;
 const center = new THREE.Vector3(dim/2,dim/2,dim/2);
