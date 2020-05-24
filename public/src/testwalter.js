@@ -69,6 +69,9 @@ function animate() {
 }
 animate();
 
+function vecDiff(a, b){
+  return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
+}
 
 function carToSph(v){
 	let xRel = player.pos.x-asteroid.pos.x;
@@ -76,10 +79,6 @@ function carToSph(v){
 	let zRel = player.pos.z-asteroid.pos.z;
 
 	return {"theta": Math.atan(Math.sqrt(sq(x)+sq(y))/z), "phi": Math.atan(yRel/xRel)};
-}
-
-function vecDiff(a, b){
-  return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
 }
 
 function sphToCar(v){

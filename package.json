@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/kaisucode/openhacks_planning#readme",
   "dependencies": {
+    "file-system": "^2.2.2",
+    "fs": "0.0.1-security",
+    "jquery": "^3.5.1",
     "socketio": "^1.0.0"
   }
 }
