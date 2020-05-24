@@ -120,8 +120,8 @@ canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointe
 canvas.addEventListener("mousemove", cameraLook, false);
 
 function cameraLook(e) {
-  camera.rotation.y += -e.movementX/200;
-  camera.rotation.x += e.movementY/200;
+  camera.rotateY(-e.movementX/200);
+  camera.rotateX(e.movementY/200);
 }
 
 canvas.onclick = function() {
