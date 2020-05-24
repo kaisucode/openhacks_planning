@@ -1,5 +1,3 @@
-
-
 var fs = require('fs');
 eval(fs.readFileSync('public/src/general_functions.js')+'');
 let port = 5000;
