@@ -5,15 +5,34 @@
     <meta name="viewport" content="width=device-width" />
     <title>openhacks</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" type="text/css">
+		<link rel="stylesheet" href="style/homepage.css" type="text/css" media="all">
     <script src="node_modules/jquery/dist/jquery.min.js" charset="utf-8"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js" charset="utf-8"></script>
+    <script src="node_modules/socket.io-client/dist/socket.io.js" charset="utf-8"></script>
   </head>
   <body>
-    <div class="container">
-      <h1>Start a game</h1>
-      <div class="card">
-        <h1>Waiting room </h1>
-      </div>
+
+		<div class="title">
+			<h1>Waiting room </h1>
+		</div>
+
+    <div class="container stage1">
+			<center>
+				<input name="username" type="text" maxlength="12" id="username" class="searchField"/>
+			</center>
+
+			<button onclick="enteredName()" type="button" id="enter" class="btn btn-primary button">Enter</button>
     </div>
+
+    <div class="container stage2">
+			<button type="button" id="redA" class="btn btn-primary button">Red A</button>
+			<button type="button" id="redB" class="btn btn-primary button">Red B</button>
+			<button type="button" id="bluA" class="btn btn-primary button">Blu A</button>
+			<button type="button" id="bluB" class="btn btn-primary button">Blu B</button>
+    </div>
+
+    <script src="src/socketClient.js" charset="utf-8"></script>
+    <script src="src/startScreen.js" charset="utf-8"></script>
+
   </body>
 </html>
