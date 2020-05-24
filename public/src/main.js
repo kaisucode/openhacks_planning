@@ -87,9 +87,9 @@ function cameraLook(e) {
   camera.rotation.y += -e.movementX/200;
   camera.rotation.x += e.movementY/200;
 
-  if(game_environment[whoami].onPlanet == "-1"){
-    let planetNormal = vecDiff(, game_environment[whoami].pos) 
-  }
+  // if(game_environment[whoami].onPlanet == "-1"){
+  //   let planetNormal = vecDiff(, game_environment[whoami].pos) 
+  // }
 }
 
 

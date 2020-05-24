@@ -29,8 +29,8 @@ let game_environment = {
   "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
   "environment": {
     "asteroids": {
-      "0": {"pos": {"x": 1, "y": 400, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 50},
-      "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 50}
+      "0": {"pos": {"x": 1, "y": 50, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 5},
+      "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 5}
     },
     "amoboxes": {
       "0": {"pos": vec(1,2,100), "vel": vec(0,0,0)}
@@ -85,9 +85,6 @@ io.sockets.on('connection', function(socket){
     if(playerMovement.direction == "right"){
       game_environment[player].vel = vec(0,-1,0);
     }
-
-    console.log(playerMovement.vel);
-    console.log(`player ${player} moved`);
   });
 
   socket.on("requestRolesTaken", function(){
@@ -97,7 +94,6 @@ io.sockets.on('connection', function(socket){
   socket.on('shooting', function(action){
     let owner = action["owner"];
     let vel = action["vel"];
-    console.log(`player ${owner} shot a booleit`);
 
     newBooleit = {
       "pos": game_environment[owner]["pos"], 
@@ -105,7 +101,6 @@ io.sockets.on('connection', function(socket){
     };
 
     game_environment[owner]["booleits"]--;
-    console.log(game_environment["environment"]["booleits"]);
     game_environment["environment"]["booleits"].push(newBooleit);
   });
 
@@ -125,16 +120,12 @@ io.sockets.on('connection', function(socket){
         if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= sq(asteroid.r) + sq(RADIUS.player)){
           game_environment[player].onPlanet = i+"";
           scaleVec(game_environment[player].vel, 0);
-          // console.log(vecToString(game_environment[player].vel));
-          // console.log(vecToString(game_environment[player].pos));
           break;
         }
         else {
           let gP = (MASS.player*asteroid.mass)/(vecDiffMagSquared(game_environment[player].pos, asteroid.pos));
           let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
-
-          console.log(asteroid);
 
           addToVec(game_environment[player].vel, accel);
         }
@@ -144,7 +135,6 @@ io.sockets.on('connection', function(socket){
     }
 
     let player = "redA";
-    // console.log(`${player} vel: ${vecToString(game_environment[player].vel)}`);
     socket.emit("update", game_environment);
     setTimeout(update, 100);
   };
