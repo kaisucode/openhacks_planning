@@ -90,10 +90,10 @@ let game_environment = {
 }
 
 playerTaken = {
-	"redA": false,
-	"redB": false,
-	"bluA": false,
-	"bluB": false
+	"redA": null,
+	"redB": null,
+	"bluA": null,
+	"bluB": null
 }
 // IMPORTANT: to add a new asteroid or somehting you should do something like game_environment.environment.asteroids[Math.max(...Object.keys(game_environment.environment.asteroids))] = {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
 
@@ -105,45 +105,23 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('pickedTeam', function(choice){
-		console.log(playerTaken);
-		if(choice["team"] == "red"){
-			if(!playerTaken["redA"]){
-				socket.emit("whoami", "redA");
-				playerTaken["redA"] = true;
-			}
-			else if(!playerTaken["redB"]){
-				socket.emit("whoami", "redB");
-				playerTaken["redB"] = true;
-			}
-			else{
-				socket.emit("whoami", "chooseBlu");
-			}
-		}
-
-		else if(choice["team"] == "blu"){
-			if(!playerTaken["bluA"]){
-				socket.emit("whoami", "bluA");
-				playerTaken["bluA"] = true;
-			}
-			else if(!playerTaken["bluB"]){
-				socket.emit("whoami", "bluB");
-				playerTaken["bluB"] = true;
-			}
-			else{
-				socket.emit("whoami", "chooseRed");
-			}
+		if(playerTaken[choice["player"]] == null){
+			playerTaken[choice["player"]] = choice["username"];
+			socket.broadcast.emit("playerTaken", {"role": choice["player"], "username": choice["username"]});
+			socket.emit("playerTaken", {"role": choice["player"], "username": choice["username"]});
 		}
 
 		if(playerTaken["redA"] && playerTaken["redB"] && playerTaken["bluA"] && playerTaken["bluB"]){
 			socket.broadcast.emit("startGame", "let the hunger games begin");
 			socket.emit("startGame", "let the hunger games begin");
 		}
- 
 	})
 
+	socket.on("requestRolesTaken", function(){
+		socket.emit('updateRolesTaken', playerTaken); 
+	})
 
 	socket.on('playerMovementOnPlanet', function(playerMovement){
-		console.log("hai");
 		let player = playerMovement["role"];
 		game_environment[player]["vel"] = playerMovement["vel"];
 		console.log(`player ${player} moved`);
@@ -191,7 +169,7 @@ io.sockets.on('connection', function(socket){
     }
 
     let player = "redA";
-    console.log(`${player} vel: ${vecToString(game_environment[player].vel)}`);
+    // console.log(`${player} vel: ${vecToString(game_environment[player].vel)}`);
     socket.emit("update", game_environment);
     setTimeout(update, 100);
   };

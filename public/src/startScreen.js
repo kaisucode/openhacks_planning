@@ -1,5 +1,5 @@
 
-
+let username;
 let stage = 1;
 $(".stage1").show();
 $(".stage2").hide();
@@ -18,42 +18,32 @@ $("#enter").click(function(){
 	enteredName();
 })
 
-$("#teamRed").click(function(){
-	clickedRed();
+let receivedRole = false;
+
+$("#redA").click(function(){ 
+	if(!receivedRole)
+		socket.emit('pickedTeam', {"player": "redA", "username": username}); 
 })
-
-$("#teamBlu").click(function(){
-	clickedBlu();
+$("#redB").click(function(){ 
+	if(!receivedRole)
+	socket.emit('pickedTeam', {"player": "redB", "username": username}); 
 })
-
-function clickedRed(){
-	socket.emit('pickedTeam', {"team": "red"});
-}
-
-function clickedBlu(){
-	socket.emit('pickedTeam', {"team": "blu"});
-}
+$("#bluA").click(function(){ 
+	if(!receivedRole)
+		socket.emit('pickedTeam', {"player": "bluA", "username": username}); 
+})
+$("#bluB").click(function(){ 
+	if(!receivedRole)
+		socket.emit('pickedTeam', {"player": "bluB", "username": username}); 
+})
 
 let whoami = "spectator";
 
-socket.on('whoami', function(reply){
-	if(reply == "redA" || reply == "redB"){
-		$("#teamBlu").css("background-color", "grey");
-		$("#teamRed").css("background-color", "grey");
-		whoami = reply
+socket.on("playerTaken", function(player){
+	$(`#${player["role"]}`).text(player["username"]);
+	if(player["username"] == username){
+		receivedRole = true;
 	}
-	else if(reply == "bluA" || reply == "bluB"){
-		$("#teamBlu").css("background-color", "grey");
-		$("#teamRed").css("background-color", "grey");
-		whoami = reply
-	}
-	else if(reply == "chooseRed"){
-		$("#teamBlu").css("background-color", "grey");
-	}
-	else if(reply == "chooseBlu"){
-		$("#teamRed").css("background-color", "grey");
-	}
-
 });
 
 socket.on("startGame", function(test){
@@ -62,12 +52,24 @@ socket.on("startGame", function(test){
 
 
 function enteredName(){
-	let username = $("#username").val();
+	username = $("#username").val();
 	if(username.length == 0)
 		return;
 	$(".stage2").show();
 	$(".stage1").hide();
-	console.log(username);
+
+	// get names of roles chosen
+	socket.emit('requestRolesTaken', "hai"); 
 }
+
+socket.on("updateRolesTaken", function(usernames){
+	console.log(usernames);
+	
+	let roles = ["redA", "redB", "bluA", "bluB"];
+	for(var role in usernames) {
+		if(usernames[role] != null)
+			$(`#${role}`).text(usernames[role]);
+	}
+});
 
 
