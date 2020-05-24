@@ -101,7 +101,7 @@ io.sockets.on('connection', function(socket){
     let owner = action["owner"];
 
 		newBooleit = {
-			"pos": game_environment[owner].pos.slice(), 
+			"pos": {...game_environment[owner].pos}, 
 			"vel": action["vel"]
 		};
 
