@@ -155,6 +155,31 @@ io.sockets.on('connection', function(socket){
 			addToVec(game_environment.environment.booleits[i].pos, vecMult(game_environment.environment.booleits[i].vel, 1));
 		}
 
+    for(let bi in game_environment.environment.booleits){
+      let booleit = game_environment.environment.booleits[bi];
+      for(let ai in game_environment.environment.asteroids){
+        let asteroid = game_environment.environment.asteroids[ai];
+        if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
+          delete game_environment.environment.booleits[bi];
+          break;
+        }
+      }
+      for(let pi in PLAYERS){
+        let player = game_environment[PLAYERS[pi]];
+        if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
+          // you got hit notification? @KEVIN
+          delete game_environment.environment.booleits[bi];
+          if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){
+            game_environment.redTeam.teamlives -= 1;
+          }
+          if(PLAYERS[pi] == "bluA" || PLAYERS[pi] == "bluB"){
+            game_environment.bluTeam.teamlives -= 1;
+          }
+          break;
+        }
+      }
+    }
+
     socket.emit("update", game_environment);
     setTimeout(update, 100);
   };

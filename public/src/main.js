@@ -216,19 +216,20 @@ function alekRandomWalk(i){
 }
 
 function update_HUD(){
+  $("#hud").html("");
   for(let i=0; i < game_environment.redTeam.teamlives; i++){
-      $("body").append(`<img style='position:absolute; top:1vh; left:${3.5*i}vw; width:3vw' src='assets/redLife.png'></img>`);
+      $("#hud").append(`<img style='position:absolute; top:1vh; left:${3.5*i}vw; width:3vw' src='assets/redLife.png'></img>`);
   }
   for(let i=0; i < game_environment.bluTeam.teamlives; i++){
-      $("body").append(`<img style='position:absolute; top:1vh; right:${3.5*i}vw; width:3vw' src='assets/bluLife.png'></img>`);
+      $("#hud").append(`<img style='position:absolute; top:1vh; right:${3.5*i}vw; width:3vw' src='assets/bluLife.png'></img>`);
   }
   if(whoami == "redA" || whoami == "redB"){
-    $("body").append(`<p style='position:absolute; top:5vh; left:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
-    $("body").append(`<p style='position:absolute; top:8vh; left:0; color: white; font-size: xx-large'>${whoami}</p>`);
+    $("#hud").append(`<p style='position:absolute; top:5vh; left:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
+    $("#hud").append(`<p style='position:absolute; top:8vh; left:0; color: white; font-size: xx-large'>${whoami}</p>`);
   }
   if(whoami == "bluB" || whoami == "bluA"){
-    $("body").append(`<p style='position:absolute; top:5vh; right:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
-    $("body").append(`<p style='position:absolute; top:8vh; right:0; color: white; font-size: xx-large'>${whoami}</p>`);
+    $("#hud").append(`<p style='position:absolute; top:5vh; right:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
+    $("#hud").append(`<p style='position:absolute; top:8vh; right:0; color: white; font-size: xx-large'>${whoami}</p>`);
   }
 }
 
@@ -258,7 +259,6 @@ socket.on('update', (new_game_environment)=>{
     gameenvLoaded = true;
     initGameEnv();
     animate();
-
   }
 });
 
