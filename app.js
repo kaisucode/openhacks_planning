@@ -18,7 +18,6 @@ app.get('/', function(req, res){
 	res.redirect("index.html");
 });
 
-
 let game_environment = {
   "redTeam": {
     "teamlives": 5
@@ -98,20 +97,25 @@ io.sockets.on('connection', function(socket){
 	});
 
 	socket.on('playerMovementOnPlanet', function(playerMovement){
-		let player = playerMovement.role;
+		let player_name = playerMovement.role;
+    let player = game_environment[player_name];
+    let asteroid = game_environment.environment.asteroids[player.onPlanet];
 
+    let angles = carToSph(asteroid, player);
     if(playerMovement.direction == "up"){
-      game_environment[player].vel = vec(1,0,0);
+      angles.phi -= 0.1;
     }
     if(playerMovement.direction == "left"){
-      game_environment[player].vel = vec(-1,0,0);
+      angles.theta -= 0.1;
     }
     if(playerMovement.direction == "down"){
-      game_environment[player].vel = vec(0,1,0);
+      angles.phi += 0.1;
     }
     if(playerMovement.direction == "right"){
-      game_environment[player].vel = vec(0,-1,0);
+      angles.theta += 0.1;
     }
+
+    copyBtoA(player.pos, sphToCar(angles, asteroid, player));
   });
 
   socket.on("requestRolesTaken", function(){
@@ -154,7 +158,7 @@ io.sockets.on('connection', function(socket){
           break;
         }
         else {
-          let gP = GRAVITY*(MASS.player*asteroid.mass)/(vecDiffMagSquared(game_environment[player].pos, asteroid.pos));
+          let gP = GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 3/4));
           let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
 

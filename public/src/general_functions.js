@@ -1,7 +1,7 @@
 // note: you can't have const or let in here, because eval is dumb
 
-var GRAVITY = 0.1;
-var JUMP_VEL = 2;
+var GRAVITY = 0.05;
+var JUMP_VEL = 5;
 
 var MASS = {
   "player": 1,
@@ -76,12 +76,12 @@ function Vector3ToVec(v){
   return {"x": v.x, "y": v.y, "z": v.z};
 }
 
-function carToSph(v, asteroid, player){
+function carToSph(asteroid, player){
   let xRel = player.pos.x-asteroid.pos.x;
   let yRel = player.pos.y-asteroid.pos.y;
   let zRel = player.pos.z-asteroid.pos.z;
 
-  return {"theta": Math.atan(Math.sqrt(sq(x)+sq(y))/z), "phi": Math.atan(yRel/xRel)};
+  return {"theta": Math.atan(Math.sqrt(sq(xRel)+sq(yRel))/zRel), "phi": Math.atan(yRel/xRel)};
 }
 
 function sphToCar(v, asteroid, player){
@@ -90,7 +90,7 @@ function sphToCar(v, asteroid, player){
   let y = r*Math.sin(v.theta)*Math.sin(v.phi);
   let z = r*Math.cos(v.theta);
 
-  let orient = vecDiff(player.position, asteroid.position);
+  let orient = vecDiff(player.pos, asteroid.pos);
 
   return vec(x+asteroid.pos.x, y+asteroid.pos.y, z+asteroid.pos.z);
 }
