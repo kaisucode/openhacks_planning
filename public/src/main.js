@@ -7,6 +7,8 @@ let HEIGHT = window.innerHeight;
 let gameenvLoaded = false;
 let game_environment;
 
+let spectatorPos;
+
 var camera = new THREE.PerspectiveCamera( 75, WIDTH / HEIGHT, 1, 1000 );
 window.addEventListener('resize', function() {
   WIDTH = window.innerWidth;
@@ -77,6 +79,20 @@ function handleKeys() {
       camera.rotateZ(-0.01);
     }
   }
+  else{ // is spectator
+    if (keysPressed['w']) {
+      spectatorPos.y += 1;
+    }
+    if (keysPressed['a']) {
+      spectatorPos.x -= 1;
+    }
+    if (keysPressed['s']) {
+      spectatorPos.y -= 1;
+    }
+    if (keysPressed['d']) {
+      spectatorPos.x += 1;
+    }
+  }
 }
 
 
@@ -102,9 +118,11 @@ function cameraLook(e) {
 canvas.onclick = function() {
   canvas.requestPointerLock();
 
-  if(game_environment[whoami].onPlanet != "-1"){
-    let planetNormal = vecDiff(game_environment.environment.asteroids[game_environment[whoami].onPlanet].pos, game_environment[whoami].pos);
-    socket.emit("jumpydude", {"planetNormal": planetNormal, "whoami": whoami});
+  if(whoami != "spectator"){
+    if(game_environment[whoami].onPlanet != "-1"){
+      let planetNormal = vecDiff(game_environment.environment.asteroids[game_environment[whoami].onPlanet].pos, game_environment[whoami].pos);
+      socket.emit("jumpydude", {"planetNormal": planetNormal, "whoami": whoami});
+    }
   }
 };
 
@@ -140,8 +158,13 @@ function initGameEnv(){
     players[PLAYERS[player]] = cube;
   }
 
-  players[whoami].add(camera);
-  camera.position.set( 0, 0, 0 );
+  if(whoami!= "spectator"){
+    players[whoami].add(camera);
+    camera.position.set( 0, 0, 0 );
+  }
+  else{
+    spectatorPos = vec(0,0,0);
+  }
 
   for (let i in game_environment.environment.asteroids){
     let asteroid = game_environment.environment.asteroids[i];
@@ -243,6 +266,10 @@ function animate() {
     if(game_environment.environment.booleits[booleit]){
       copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
     }
+  }
+
+  if(whoami == "spectator"){
+    copyBtoA(camera.position, spectatorPos);
   }
 
   for(let i in ptLights){
