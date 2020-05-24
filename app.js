@@ -59,6 +59,13 @@ playerTaken = {
 }
 // IMPORTANT: to add a new asteroid or somehting you should do something like game_environment.environment.asteroids[Math.max(...Object.keys(game_environment.environment.asteroids))] = {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
 
+
+function booleitWithinBounds(booleitPos){
+	return (booleitPos.x >= 0 && booleitPos.x <= 1000 &&
+		booleitPos.y >= 0 && booleitPos.y <= 1000 &&
+		booleitPos.z >= 0 && booleitPos.z <= 1000);
+}
+
 io.sockets.on('connection', function(socket){
 	console.log("player connected");
 	socket.emit("chat message", "GREETINGS FROM SERVER")
@@ -172,6 +179,7 @@ io.sockets.on('connection', function(socket){
         let asteroid = game_environment.environment.asteroids[ai];
         if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
           delete game_environment.environment.booleits[bi];
+					socket.emit("delBooleitFromScene", bi);
           break;
         }
       }
@@ -180,6 +188,7 @@ io.sockets.on('connection', function(socket){
         if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
           // you got hit notification? @KEVIN
           delete game_environment.environment.booleits[bi];
+					socket.emit("delBooleitFromScene", bi);
           if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){
             game_environment.redTeam.teamlives -= 1;
           }
@@ -189,6 +198,10 @@ io.sockets.on('connection', function(socket){
           break;
         }
       }
+			if(!booleitWithinBounds(game_environment.environment.booleits[bi].pos)){
+          delete game_environment.environment.booleits[bi];
+					socket.emit("delBooleitFromScene", bi);
+			}
     }
 
     socket.emit("update", game_environment);
