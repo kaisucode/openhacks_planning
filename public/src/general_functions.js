@@ -46,7 +46,7 @@ const MASS = {
 
 const RADIUS = {
   "player": 0.5,
-  "booleits": 0.1,
+  "booleits": 5,
   "extralife": 1,
   "amoboxes": 1
 }

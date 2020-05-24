@@ -1,5 +1,5 @@
-let port = 5000;
 
+let startGame = true;
 let express = require('express'); // needs this library
 let app = express();
 let server = require('http').createServer(app).listen(port);
@@ -64,6 +64,7 @@ io.sockets.on('connection', function(socket){
 		if(playerTaken["redA"] && playerTaken["redB"] && playerTaken["bluA"] && playerTaken["bluB"]){
 			socket.broadcast.emit("startGame", "let the hunger games begin");
 			socket.emit("startGame", "let the hunger games begin");
+			let startGame = true;
 		}
 	});
 
@@ -83,8 +84,8 @@ io.sockets.on('connection', function(socket){
       game_environment[player].vel = vec(0,-1,0);
     }
 
-    console.log(playerMovement.vel);
-		console.log(`player ${player} moved`);
+    // console.log(playerMovement.vel);
+		// console.log(`player ${player} moved`);
 	});
 
 	socket.on("requestRolesTaken", function(){
@@ -103,11 +104,17 @@ io.sockets.on('connection', function(socket){
 
 		game_environment[owner]["booleits"]--;
 		console.log(game_environment["environment"]["booleits"]);
-		game_environment["environment"]["booleits"].push(newBooleit);
+		// game_environment["environment"]["booleits"].push(newBooleit);
+		
+		console.log("HAEEEA");
+		console.log(Math.max(...Object.keys(game_environment.environment.booleits)));
+		game_environment.environment.booleits[Math.max(...Object.keys(game_environment.environment.booleits))+1] = newBooleit;
 	});
 
   setTimeout(update, 100);
   function update(){
+		if(!startGame)
+			return;
     for(p in PLAYERS){
       let player = PLAYERS[p];
       for(i in game_environment.environment.asteroids){
@@ -115,8 +122,8 @@ io.sockets.on('connection', function(socket){
         if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= sq(asteroid.r) + sq(RADIUS.player)){
           game_environment[player].onPlanet = true;
           multToVec(game_environment[player].vel, 0);
-          console.log(vecToString(game_environment[player].vel));
-          console.log(vecToString(game_environment[player].pos));
+          // console.log(vecToString(game_environment[player].vel));
+          // console.log(vecToString(game_environment[player].pos));
         }
         else {
           game_environment[player].onPlanet = false;
