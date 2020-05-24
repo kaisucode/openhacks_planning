@@ -10,9 +10,24 @@
 
 .button{
 	margin: 10px;
+	width: 40%;
+	height: 30%;
+	background-color: black
 }
 
-#teamRed{
-	background-color: red;
+#redA{background-color: red;}
+#redB{background-color: red;}
+#bluA{background-color: blue;}
+#bluB{background-color: blue;}
+
+#enter{
+	width: 30%;
+}
+
+.stage2{
+	/* float: left; */
+	text-align: center;
+	width: 50%;
+	height: 50%;
 }
 
