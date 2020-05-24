@@ -56,7 +56,7 @@ playerTaken = {
 // IMPORTANT: to add a new asteroid or somehting you should do something like game_environment.environment.asteroids[Math.max(...Object.keys(game_environment.environment.asteroids))] = {"pos": {"x": 1, "y": 40, "z": 3}, "vel": {"x": 1, "y": 2, "z": 3}, "mass": 7, "r": 30}
 
 io.sockets.on('connection', function(socket){
-	console.log("connected");
+	console.log("player connected");
 	socket.emit("chat message", "GREETINGS FROM SERVER")
 	socket.on('disconnect', function(){
 		console.log("player disconnected");
@@ -106,7 +106,6 @@ io.sockets.on('connection', function(socket){
 		};
 
 		game_environment[owner]["booleits"]--;
-		console.log(game_environment["environment"]["booleits"]);
 		game_environment.environment.booleits[Math.max(...Object.keys(game_environment.environment.booleits))+1] = newBooleit;
 	});
 
