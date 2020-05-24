@@ -147,7 +147,6 @@ io.sockets.on('connection', function(socket){
 
 		for(i in game_environment.environment.booleits){
 			addToVec(game_environment.environment.booleits[i].pos, vecMult(game_environment.environment.booleits[i].vel, 0.1));
-
 		}
 
     socket.emit("update", game_environment);

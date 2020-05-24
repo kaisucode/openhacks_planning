@@ -27,8 +27,6 @@ function generateBooleit(){
 		"owner": whoami, 
 		"vel": heading
 	};
-	socket.emit('shooting', updatedBooleitData);
-
 	newBooleit = {
 		"pos": game_environment[whoami]["pos"], 
 		"vel": heading
@@ -44,6 +42,8 @@ function generateBooleit(){
 	scene.add(cube);
 	booleits[i] = cube;
   update_HUD();
+
+	socket.emit('shooting', updatedBooleitData);
 }
 
 
