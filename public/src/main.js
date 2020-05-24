@@ -232,7 +232,7 @@ function initGameEnv(){
     camera.lookAt(players[whoami].position);
 
     camControls = new THREE.FirstPersonControls(camera, canvas);
-    camControls.lookSpeed = 0.4;
+    camControls.lookSpeed = 0.1;
     camControls.movementSpeed = 20;
     camControls.noFly = true;
     camControls.lookVertical = true;
