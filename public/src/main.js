@@ -33,7 +33,8 @@ window.addEventListener('resize', function() {
   camera.updateProjectionMatrix();
 });
 
-let whoami = "redA";
+const urlParams = new URLSearchParams(window.location.search);
+let whoami = urlParams.get("whoami") || "spectator";
 let heading =  {"x": 1, "y": 2, "z": 3};
 
 function shooting(){
@@ -58,28 +59,30 @@ document.addEventListener("keydown", (event) => { keysPressed[event.key] = true;
 
 
 function handleKeys() {
-  if(game_environment[whoami]["onPlanet"]){
-    if (keysPressed['w']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
+  if(whoami != "spectator"){
+    if(game_environment[whoami]["onPlanet"]){
+      if (keysPressed['w']) {
+        socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
+      }
+      if (keysPressed['a']) {
+        socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
+      }
+      if (keysPressed['s']) {
+        socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
+      }
+      if (keysPressed['d']) {
+        socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
+      }
     }
-    if (keysPressed['a']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "left"});
+    if(keysPressed[" "]){
+      shooting();
     }
-    if (keysPressed['s']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "down"});
+    if(keysPressed["q"]){
+      camera.rotateZ(0.01);
     }
-    if (keysPressed['d']) {
-      socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
+    if(keysPressed["e"]){
+      camera.rotateZ(-0.01);
     }
-  }
-  if(keysPressed[" "]){
-    shooting();
-  }
-  if(keysPressed["q"]){
-    camera.rotateZ(0.01);
-  }
-  if(keysPressed["e"]){
-    camera.rotateZ(-0.01);
   }
 }
 
@@ -96,10 +99,10 @@ canvas.addEventListener("mousemove", evt=> {
 canvas.id = "threejscanvas";
 document.body.appendChild( canvas );
 
-canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-canvas.requestPointerLock();
+// canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+// canvas.requestPointerLock();
 
-canvas.style.cursor = "none";
+// canvas.style.cursor = "none";
 var scene = new THREE.Scene();
 
 let light = new THREE.AmbientLight(0xffffff);
@@ -204,12 +207,12 @@ function update_HUD(){
       $("body").append(`<img style='position:absolute; top:1vh; right:${3.5*i}vw; width:3vw' src='assets/bluLife.png'></img>`);
   }
   if(whoami == "redA" || whoami == "redB"){
-    $("body").append(`<p style='position:absolute; top:3vh; left:0; color: white'>Booleits: ${game_environment[whoami].booleits}</p>`);
-    $("body").append(`<p style='position:absolute; top:5vh; left:0; color: white'>${whoami}</p>`);
+    $("body").append(`<p style='position:absolute; top:5vh; left:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
+    $("body").append(`<p style='position:absolute; top:8vh; left:0; color: white; font-size: xx-large'>${whoami}</p>`);
   }
   if(whoami == "bluB" || whoami == "bluA"){
-    $("body").append(`<p style='position:absolute; top:3vh; right:0; color: white'>Booleits: ${whoami}</p>`);
-    $("body").append(`<p style='position:absolute; top:5vh; right:0; color: white'>Booleits: ${whoami}</p>`);
+    $("body").append(`<p style='position:absolute; top:5vh; right:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
+    $("body").append(`<p style='position:absolute; top:8vh; right:0; color: white; font-size: xx-large'>${whoami}</p>`);
   }
 }
 
