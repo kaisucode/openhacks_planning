@@ -34,7 +34,7 @@ let game_environment = {
   "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
   "environment": {
     "asteroids": {
-      "0": {"pos": {"x": 1, "y": 50, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 5},
+      "0": {"pos": {"x": 50, "y": 50, "z": 20}, "vel": vec(0,0,0), "mass": 7, "r": 5},
       "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 5}
     },
     "amoboxes": {
