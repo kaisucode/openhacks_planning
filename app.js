@@ -82,6 +82,18 @@ io.sockets.on('connection', function(socket){
     addToVec(game_environment[player].vel, planetNormal);
 	});
 
+	socket.on('reposition', function(choice){
+		console.log("REPOSITIONING");
+		game_environment["redA"].pos = {"x": 1, "y": 2, "z": 3};
+		game_environment["redB"].pos = {"x": 10, "y": 2, "z": 3};
+		game_environment["bluA"].pos = {"x": 10, "y": 20, "z": 3};
+		game_environment["bluB"].pos = {"x": 20, "y": 20, "z": 3};
+    for(p in PLAYERS){
+      let player = PLAYERS[p];
+			game_environment[player].vel = {"x": 0, "y": 0, "z": 0};
+		}
+	});
+
 	socket.on('pickedTeam', function(choice){
 		if(playerTaken[choice["player"]] == null){
 			playerTaken[choice["player"]] = choice["username"];
