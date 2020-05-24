@@ -198,10 +198,10 @@ io.sockets.on('connection', function(socket){
           break;
         }
       }
-			if(!booleitWithinBounds(game_environment.environment.booleits[bi].pos)){
-          delete game_environment.environment.booleits[bi];
-					socket.emit("delBooleitFromScene", bi);
-			}
+			// if(!booleitWithinBounds(game_environment.environment.booleits[bi].pos)){
+      //     delete game_environment.environment.booleits[bi];
+			//     socket.emit("delBooleitFromScene", bi);
+			// }
     }
 
     socket.emit("update", game_environment);
