@@ -60,6 +60,15 @@ io.sockets.on('connection', function(socket){
 		console.log("player disconnected");
 	});
 
+	socket.on('jumpydude', function(data){
+    let player = data.whoami;
+    let planetNormal = data.planetNormal;
+    planetNormal = normalizeVec(planetNormal);
+    scaleVec(planetNormal, -3);
+    game_environment[player].onPlanet = "-1";
+    addToVec(game_environment[player].vel, planetNormal);
+	});
+
 	socket.on('pickedTeam', function(choice){
 		if(playerTaken[choice["player"]] == null){
 			playerTaken[choice["player"]] = choice["username"];
@@ -138,7 +147,7 @@ io.sockets.on('connection', function(socket){
           addToVec(game_environment[player].vel, accel);
         }
 
-        // addToVec(game_environment[player].pos, game_environment[player].vel);
+        addToVec(game_environment[player].pos, game_environment[player].vel);
       }
     }
 

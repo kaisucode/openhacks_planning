@@ -97,21 +97,16 @@ canvas.addEventListener("mousemove", cameraLook, false);
 function cameraLook(e) {
   camera.rotation.y += -e.movementX/200;
   camera.rotation.x += e.movementY/200;
-
-  // if(game_environment[whoami].onPlanet == "-1"){
-  //   let planetNormal = vecDiff(, game_environment[whoami].pos) 
-  // }
 }
-
-
 
 canvas.onclick = function() {
   canvas.requestPointerLock();
+
+  if(game_environment[whoami].onPlanet != "-1"){
+    let planetNormal = vecDiff(game_environment.environment.asteroids[game_environment[whoami].onPlanet].pos, game_environment[whoami].pos);
+    socket.emit("jumpydude", {"planetNormal": planetNormal, "whoami": whoami});
+  }
 };
-
-
-
-
 
 canvas.id = "threejscanvas";
 document.body.appendChild( canvas );
