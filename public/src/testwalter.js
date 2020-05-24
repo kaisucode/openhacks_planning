@@ -4,6 +4,8 @@ const dim = 100;
 const center = new THREE.Vector3(dim/2,dim/2,dim/2);
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
+const PLAYER_R = 0.5;
+const ASTEROID_R = 10;
 
 var camera = new THREE.PerspectiveCamera( 75, WIDTH / HEIGHT, 1, 1000 );
 window.addEventListener('resize', function() {
@@ -33,7 +35,7 @@ scene.add(light);
 let player, asteroid;
 
 (()=>{
-let geometry = new THREE.BoxGeometry(1,1,1);
+let geometry = new THREE.BoxGeometry(PLAYER_R*2, PLAYER_R*2, PLAYER_R*2);
 let material = new THREE.MeshPhongMaterial({color: "#44aa88"});
 const cube = new THREE.Mesh(geometry, material);
 cube.rotation.x = Math.random()*Math.PI*2;
@@ -47,7 +49,7 @@ player = cube;
 })();
 
 (()=>{
-let geometry = new THREE.SphereGeometry(10);
+let geometry = new THREE.SphereGeometry(ASTEROID_R);
 let material = new THREE.MeshPhongMaterial({color: "#ffffff"});
 const sphere = new THREE.Mesh(geometry, material);
 sphere.position.x = 0;
@@ -67,3 +69,46 @@ function animate() {
 }
 animate();
 
+
+function carToSph(v){
+	let xRel = player.pos.x-asteroid.pos.x;
+	let yRel = player.pos.y-asteroid.pos.y;
+	let zRel = player.pos.z-asteroid.pos.z;
+
+	return {"theta": Math.atan(Math.sqrt(sq(x)+sq(y))/z), "phi": Math.atan(yRel/xRel)};
+}
+
+function vecDiff(a, b){
+  return {"x": a.x-b.x, "y": a.y-b.y, "z": a.z-b.z};
+}
+
+function sphToCar(v){
+	let r = ASTEROID_R + PLAYER_R; // FIXME
+	let x = r*Math.sin(v.theta)*Math.cos(v.phi);
+	let y = r*Math.sin(v.theta)*Math.sin(v.phi);
+	let z = r*Math.cos(v.theta);
+	let orient = vecDiff(player.position, asteroid.position);
+  console.log(asteroid);
+  console.log(player);
+  console.log(v);
+
+  player.position.x = x + asteroid.position.x;
+  player.position.y = y + asteroid.position.y;
+  player.position.z = z + asteroid.position.z;
+}
+
+function duck(a,b){
+  return a+b;
+}
+
+// function sphToCar(v){
+// 	let r = asteroid.r + RADIUS.player
+// 	let x = r*Math.sin(v.theta)*Math.cos(v.phi)
+// 	let y = r*Math.sin(v.theta)*Math.sin(v.phi)
+// 	let z = r*Math.cos(v.theta)
+// 	let orient = vecDiff(player.pos, asteroid.pos)
+//
+//   player.pos.x = x + asteroid.pos.x
+//   player.pos.y = y + asteroid.pos.y
+//   player.pos.z = z + asteroid.pos.z
+// }
