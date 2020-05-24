@@ -121,8 +121,8 @@ canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointe
 canvas.addEventListener("mousemove", cameraLook, false);
 
 function cameraLook(e) {
-  // camera.rotation.y += -e.movementX/200;
-  // camera.rotation.x += e.movementY/200;
+  camera.rotation.y += -e.movementX/200;
+  camera.rotation.x += e.movementY/200;
 }
 
 canvas.onclick = function() {
@@ -169,8 +169,8 @@ function initGameEnv(){
   }
 
   if(whoami!= "spectator"){
-    // players[whoami].add(camera);
-    // camera.position.set( 0, 0, 0 );
+    players[whoami].add(camera);
+    camera.position.set( 0, 0, 0 );
   }
   else{
     spectatorPos = vec(0,0,0);
@@ -211,42 +211,10 @@ function initGameEnv(){
       "assets/stars.jpg",
       "assets/stars.jpg"
     ]);
-    // const texture = loader.load([
-    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg',
-    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
-    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
-    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
-    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
-    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg',
-    // ]);
     scene.background = texture;
   }
 
   update_HUD();
-
-
-  if(whoami != "spectator"){
-    camera.position.x = players[whoami].position.x+10;
-    camera.position.y = players[whoami].position.y+10;
-    camera.position.z = players[whoami].position.z+10;
-    camera.lookAt(players[whoami].position);
-  }
-  else {
-    camera.position.x = spectatorPos.x+10;
-    camera.position.y = spectatorPos.y+10;
-    camera.position.z = spectatorPos.z+10;
-    camera.lookAt(spectatorPos);
-  }
-  camControls = new THREE.FirstPersonControls(camera, canvas);
-  camControls.lookSpeed = 0.1;
-  camControls.movementSpeed = 0;
-  camControls.noFly = true;
-  camControls.lookVertical = true;
-  camControls.constrainVertical = true;
-  camControls.verticalMin = 1.0;
-  camControls.verticalMax = 2.0;
-  camControls.lon = -150;
-  camControls.lat = 120;
 
 }
 
@@ -322,13 +290,6 @@ function animate() {
     if(game_environment.environment.booleits[booleit]){
       copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
     }
-  }
-
-  if(whoami == "spectator"){
-    copyBtoA(camera.position, spectatorPos);
-  }
-  else{
-    camControls.update(0.1);
   }
 
   for(let i in ptLights){
