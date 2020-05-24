@@ -305,6 +305,10 @@ socket.on("delBooleitFromScene", (booleitID)=>{
 	console.log("removed booleit from scene");
 });
 
+socket.on("playerShot", (player)=>{
+	console.log(`${player} player shot`);
+});
+
 socket.on('update', (new_game_environment)=>{
   game_environment = new_game_environment;
   handleKeys();

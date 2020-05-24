@@ -180,8 +180,8 @@ io.sockets.on('connection', function(socket){
       for(let ai in game_environment.environment.asteroids){
         let asteroid = game_environment.environment.asteroids[ai];
         if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
-					socket.emit("delBooleitFromScene", bi);
-          delete game_environment.environment.booleits[bi];
+					// socket.emit("delBooleitFromScene", bi);
+          // delete game_environment.environment.booleits[bi];
           break;
         }
       }
@@ -189,6 +189,7 @@ io.sockets.on('connection', function(socket){
         let player = game_environment[PLAYERS[pi]];
         if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
           // you got hit notification? @KEVIN
+					socket.emit("playerShot", pi);
 					socket.emit("delBooleitFromScene", bi);
           delete game_environment.environment.booleits[bi];
           if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){

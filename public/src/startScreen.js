@@ -1,5 +1,6 @@
 
 let username = "spectator";
+let whoami = "spectator";
 let stage = 1;
 $(".stage1").show();
 $(".stage2").hide();
@@ -42,11 +43,12 @@ socket.on("playerTaken", function(player){
 	$(`#${player["role"]}`).text(player["username"]);
 	if(player["username"] == username){
 		receivedRole = true;
+		whoami = player["role"];
 	}
 });
 
 socket.on("startGame", function(test){
-	window.location.replace(`battle.html?whoami=${username}`);
+	window.location.replace(`battle.html?whoami=${whoami}`);
 });
 
 
