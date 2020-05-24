@@ -52,12 +52,11 @@ function shooting(){
 }
 
 
+//handles key presses, handleKeys is called in the update tick
 var keysPressed = {};
 var keysPressedTimes = {};
 document.addEventListener("keyup", (event) => { keysPressed[event.key] = false; }, false);
 document.addEventListener("keydown", (event) => { keysPressed[event.key] = true; }, false);
-
-
 function handleKeys() {
   if(whoami != "spectator"){
     if(game_environment[whoami]["onPlanet"]){
@@ -86,21 +85,24 @@ function handleKeys() {
   }
 }
 
+
+
+
 var renderer = new THREE.WebGLRenderer();
 let canvas = renderer.domElement;
 
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
 
-canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 
+
+//handle mouse movement
+canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 canvas.addEventListener("mousemove", (e) => {
   camera.rotation.y += -e.movementX/200;
   camera.rotation.x += e.movementY/200;
-  console.log(`mouseX -> ${e.movementX}, mouseY -> ${e.movementY}`);
+  // console.log(`mouseX -> ${e.movementX}, mouseY -> ${e.movementY}`);
 }, false);
-
-
 canvas.onclick = function() {
   canvas.requestPointerLock();
 };
