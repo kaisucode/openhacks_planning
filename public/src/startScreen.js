@@ -1,5 +1,5 @@
 
-let username;
+let username = "spectator";
 let stage = 1;
 $(".stage1").show();
 $(".stage2").hide();
@@ -37,7 +37,6 @@ $("#bluB").click(function(){
 		socket.emit('pickedTeam', {"player": "bluB", "username": username}); 
 })
 
-let whoami = "spectator";
 
 socket.on("playerTaken", function(player){
 	$(`#${player["role"]}`).text(player["username"]);
@@ -47,7 +46,7 @@ socket.on("playerTaken", function(player){
 });
 
 socket.on("startGame", function(test){
-	window.location.replace(`battle.html?whoami=${whoami}`);
+	window.location.replace(`battle.html?whoami=${username}`);
 });
 
 
