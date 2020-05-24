@@ -9,7 +9,7 @@ let game_environment;
 
 // constants, exist in both files
 const MASS = {
-  "player": 0.1,
+  "player": 1,
   "booleits": 0.1,
   "amoboxes": 1,
   "extralife": 1
@@ -88,25 +88,8 @@ let canvas = renderer.domElement;
 
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
-// canvas.addEventListener("mousemove", evt=> {
-//   var rect = canvas.getBoundingClientRect();
-//   camera.rotation.y = - Math.PI/2 + Math.PI*(evt.clientX - rect.left)/WIDTH;
-//   camera.rotation.x = Math.PI*(evt.clientY - rect.top)/HEIGHT - Math.PI/2;
-// });
+
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-
-document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
-
-// function onlyMoveWhenFocused() {
-//   // let cCanvas = document.querySelector('canvas');
-//   if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
-//     console.log('The pointer lock status is now locked');
-    
-//   } else {
-//     console.log('The pointer lock status is now unlocked');  
-//     document.removeEventListener("mousemove", handleMouse, false);
-//   }
-// }
 
 canvas.addEventListener("mousemove", (e) => {
   camera.rotation.y += -e.movementX/200;
