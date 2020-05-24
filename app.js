@@ -114,7 +114,7 @@ io.sockets.on('connection', function(socket){
         let asteroid = game_environment.environment.asteroids[i];
         if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= sq(asteroid.r) + sq(RADIUS.player)){
           game_environment[player].onPlanet = true;
-          multToVec(game_environment[player].vel, 0);
+          scaleVec(game_environment[player].vel, 0);
           console.log(vecToString(game_environment[player].vel));
           console.log(vecToString(game_environment[player].pos));
         }

@@ -18,7 +18,7 @@ function addToVec(a, b){
   a.y += b.y;
   a.z += b.z;
 }
-function multToVec(v, k){
+function scaleVec(v, k){
   v.x *= k;
   v.y *= k;
   v.z *= k;
@@ -35,6 +35,14 @@ function vecDiffMagSquared(a, b){
 }
 function vecToString(v){
   return `${v.x.toFixed(3)}, ${v.y.toFixed(3)}, ${v.z.toFixed(3)}`;
+}
+
+function vecToVector3(v){
+  return new Vector3(v.x, v.y, v.z);
+}
+
+function Vector3ToVec(v){
+  return {"x": v.x, "y": v.y, "z": v.z};
 }
 
 const MASS = {
