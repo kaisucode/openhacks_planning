@@ -141,18 +141,18 @@ io.sockets.on('connection', function(socket){
 			return;
 		}
 
+    const TOLERANCE = 1.1;
     for(p in PLAYERS){
       let player = PLAYERS[p];
       if(game_environment[player].onPlanet != "-1"){
         let asteroid = game_environment.environment.asteroids[game_environment[player].onPlanet];
-        const TOLERANCE = 1.1;
         if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) > TOLERANCE*(sq(asteroid.r) + sq(RADIUS.player))){
           game_environment[player].onPlanet = "-1";
         }
       }
       for(i in game_environment.environment.asteroids){
         let asteroid = game_environment.environment.asteroids[i];
-        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= sq(asteroid.r) + sq(RADIUS.player)){
+        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= (sq(asteroid.r) + sq(RADIUS.player))*TOLERANCE){
           game_environment[player].onPlanet = i+"";
           scaleVec(game_environment[player].vel, 0);
           break;
