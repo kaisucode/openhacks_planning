@@ -1,6 +1,6 @@
 // note: you can't have const or let in here, because eval is dumb
 
-var GRAVITY = 0.01;
+var GRAVITY = 0.1;
 var JUMP_VEL = 2;
 
 var MASS = {
