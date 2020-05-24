@@ -31,10 +31,7 @@ let game_environment = {
   "bluA": { "booleits": 10, "pos": {"x": 10, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
   "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
   "environment": {
-    "asteroids": {
-      "0": {"pos": {"x": 50, "y": 50, "z": 20}, "vel": vec(0,0,0), "mass": 7, "r": 5},
-      "1": {"pos": {"x": 1, "y": 40, "z": 3}, "vel": vec(0,0,0), "mass": 7, "r": 5}
-    },
+    "asteroids": { },
     "amoboxes": {
       "0": {"pos": vec(1,2,100), "vel": vec(0,0,0)}
     },
@@ -42,6 +39,16 @@ let game_environment = {
     "booleits": {
       "0": {"pos": {"x": 1, "y": 2, "z": 30}, "vel": vec(0,0,0)}
     }
+  }
+}
+
+for (let i = 0; i < 10; i++){
+  let r = (Math.random()+0.5)*20;
+  game_environment.environment.asteroids[i+""] = {
+    "pos": randvec(500), 
+    "vel": vec(0,0,0), 
+    "mass": Math.pow(r, 3)*0.1, 
+    "r": r
   }
 }
 
@@ -64,7 +71,7 @@ io.sockets.on('connection', function(socket){
     let player = data.whoami;
     let planetNormal = data.planetNormal;
     planetNormal = normalizeVec(planetNormal);
-    scaleVec(planetNormal, -3);
+    scaleVec(planetNormal, -JUMP_VEL);
     game_environment[player].onPlanet = "-1";
     addToVec(game_environment[player].vel, planetNormal);
 	});
@@ -140,7 +147,7 @@ io.sockets.on('connection', function(socket){
           break;
         }
         else {
-          let gP = (MASS.player*asteroid.mass)/(vecDiffMagSquared(game_environment[player].pos, asteroid.pos));
+          let gP = GRAVITY*(MASS.player*asteroid.mass)/(vecDiffMagSquared(game_environment[player].pos, asteroid.pos));
           let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
 

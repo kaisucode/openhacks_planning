@@ -1,7 +1,9 @@
 const speed = 0.4;
 const lightSpeed = 0.03;
-const dim = 100;
+
+const dim = 500;
 const center = new THREE.Vector3(dim/2,dim/2,dim/2);
+
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
 let gameenvLoaded = false;
@@ -92,6 +94,12 @@ function handleKeys() {
     if (keysPressed['d']) {
       spectatorPos.x += 1;
     }
+    if(keysPressed["q"]){
+      spectatorPos.z += 1;
+    }
+    if(keysPressed["e"]){
+      spectatorPos.z -= 1;
+    }
   }
 }
 
@@ -169,7 +177,7 @@ function initGameEnv(){
   for (let i in game_environment.environment.asteroids){
     let asteroid = game_environment.environment.asteroids[i];
     let geometry = new THREE.SphereGeometry(asteroid.r);
-    let material = new THREE.MeshPhongMaterial({color: "#ffffff"});
+    let material = new THREE.MeshPhongMaterial({color: "#00ffff"});
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = asteroid.pos.x;
     cube.position.y = asteroid.pos.y;
@@ -180,7 +188,6 @@ function initGameEnv(){
 
   for (let i in game_environment.environment.booleits){
     let booleit = game_environment.environment.booleits[i];
-    // let geometry = new THREE.SphereGeometry(RADIUS.booleits);
     let geometry = new THREE.SphereGeometry(RADIUS.booleits);
     let material = new THREE.MeshPhongMaterial({color: "pink"});
     const cube = new THREE.Mesh(geometry, material);
@@ -189,6 +196,28 @@ function initGameEnv(){
     cube.position.z = booleit.pos.z;
     scene.add(cube);
     booleits[i] = cube;
+  }
+
+
+  {
+    const loader = new THREE.CubeTextureLoader();
+    const texture = loader.load([
+      "assets/stars.jpg",
+      "assets/stars.jpg",
+      "assets/stars.jpg",
+      "assets/stars.jpg",
+      "assets/stars.jpg",
+      "assets/stars.jpg"
+    ]);
+    // const texture = loader.load([
+    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-x.jpg',
+    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-x.jpg',
+    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-y.jpg',
+    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-y.jpg',
+    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/pos-z.jpg',
+    //   'https://threejsfundamentals.org/threejs/resources/images/cubemaps/computer-history-museum/neg-z.jpg',
+    // ]);
+    scene.background = texture;
   }
 
   update_HUD();
@@ -201,10 +230,10 @@ let ptLightVels = [];
 let ptLightColors = ["#ffff00", "#0000ff", "#00ff00", "#ff0000", "#00FFFF", "#ffffff"];
 
 for(let i in ptLightColors){
-  ptLights.push( new THREE.PointLight( ptLightColors[i], 1, 100, 2) );
+  ptLights.push( new THREE.PointLight( ptLightColors[i], 1, 0, 1) );
   scene.add(ptLights[i]);
 
-  ptLightVels.push(new THREE.Vector3(Math.random(), Math.random(), Math.random()));
+  ptLightVels.push(new THREE.Vector3(5*Math.random(), 5*Math.random(), 5*Math.random()));
   ptLightVels[i].normalize();
   ptLightVels[i].multiplyScalar(lightSpeed);
 

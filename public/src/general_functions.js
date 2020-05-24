@@ -1,3 +1,8 @@
+// note: you can't have const or let in here, because eval is dumb
+
+var GRAVITY = 0.01;
+var JUMP_VEL = 2;
+
 var MASS = {
   "player": 1,
   "booleits": 0.1,
@@ -22,6 +27,10 @@ function copyBtoA(a, b){
 
 function vec(x,y,z){
   return {"x": x, "y": y, "z": z};
+}
+function randvec(s){
+  s = s || 1;
+  return vec(s*2*(Math.random()-0.5), s*2*(Math.random()-0.5), s*2*(Math.random()-0.5));
 }
 function sq (number) {
   return number * number;
