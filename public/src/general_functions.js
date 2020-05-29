@@ -1,7 +1,7 @@
 // note: you can't have const or let in here, because eval is dumb
 
-var GRAVITY = 0.05;
-var JUMP_VEL = 5;
+var GRAVITY = 0.01;
+var JUMP_VEL = 3;
 
 var MASS = {
   "player": 1,
@@ -93,5 +93,16 @@ function sphToCar(v, asteroid, player){
   let orient = vecDiff(player.pos, asteroid.pos);
 
   return vec(x+asteroid.pos.x, y+asteroid.pos.y, z+asteroid.pos.z);
+}
+
+function sphToCarForCamera(v, asteroid, player){
+  let r = asteroid.r + RADIUS.player + 40; 
+  let x = r*Math.sin(v.theta)*Math.cos(v.phi);
+  let y = r*Math.sin(v.theta)*Math.sin(v.phi);
+  let z = r*Math.cos(v.theta);
+
+  // let orient = vecDiff(player.pos, asteroid.pos);
+
+  return vec(-x+asteroid.pos.x, -y+asteroid.pos.y, -z+asteroid.pos.z);
 }
 

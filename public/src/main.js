@@ -9,6 +9,8 @@ let gameenvLoaded = false;
 let game_environment;
 
 let camControls;
+let onPlanet_lookAngles = {"phi": 0, "theta": -Math.PI/2};
+let onPlanet_lookPos = new THREE.Vector3(0,0,0);
 
 let spectatorPos;
 
@@ -58,7 +60,10 @@ document.addEventListener("keyup", (event) => { keysPressed[event.key] = false; 
 document.addEventListener("keydown", (event) => { keysPressed[event.key] = true; }, false);
 function handleKeys() {
   if(whoami != "spectator"){
-    if(game_environment[whoami]["onPlanet"] != -1){
+    if(keysPressed[" "]){
+      generateBooleit();
+    }
+    if(game_environment[whoami]["onPlanet"] != "-1"){
       if (keysPressed['w']) {
         socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "up"});
       }
@@ -72,9 +77,6 @@ function handleKeys() {
         socket.emit('playerMovementOnPlanet', {"role": whoami, "direction": "right"});
       }
     }
-    if(keysPressed[" "]){
-      generateBooleit();
-    }
     if(keysPressed["q"]){
       camera.rotateZ(0.01);
     }
@@ -82,7 +84,6 @@ function handleKeys() {
       camera.rotateZ(-0.01);
     }
     if(keysPressed["p"]){
-			console.log("hai");
 			socket.emit("reposition", {"floo": "says hai"});
     }
   }
@@ -109,23 +110,40 @@ function handleKeys() {
 }
 
 
-
-
 var renderer = new THREE.WebGLRenderer();
 let canvas = renderer.domElement;
 
 renderer.setClearColor (0x000000, 1);
 renderer.setSize(WIDTH, HEIGHT);
 
-
-
 //handle mouse movement
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 canvas.addEventListener("mousemove", cameraLook, false);
 
 function cameraLook(e) {
-  camera.rotateY(-e.movementX/200);
-  camera.rotateX(e.movementY/200);
+  if(whoami != "spectator" && game_environment[whoami]["onPlanet"] != "-1"){
+    onPlanet_lookAngles.phi -= e.movementY*0.001;
+
+    let player = game_environment[whoami];
+    let asteroid = game_environment.environment.asteroids[game_environment[whoami].onPlanet];
+    let playerAngles = carToSph(player, asteroid);
+    let centerTheta = playerAngles.theta;
+
+    let candidate_newTheta = onPlanet_lookAngles.theta-e.movementX*0.01;
+    // if((candidate_newTheta > centerTheta - Math.PI/40 || candidate_newTheta >
+    //   onPlanet_lookAngles.theta) && (candidate_newTheta < centerTheta + Math.PI/40 ||
+        // candidate_newTheta < onPlanet_lookAngles.theta)) {
+       onPlanet_lookAngles.theta = candidate_newTheta;
+    // }
+
+    // angles should update based on the FOV
+
+    copyBtoA(onPlanet_lookPos, sphToCarForCamera(onPlanet_lookAngles, asteroid, player));
+  }
+  else{
+    camera.rotateY(-e.movementX/200);
+    camera.rotateX(e.movementY/200);
+  }
 }
 
 canvas.onclick = function() {
@@ -182,7 +200,7 @@ function initGameEnv(){
   for (let i in game_environment.environment.asteroids){
     let asteroid = game_environment.environment.asteroids[i];
     let geometry = new THREE.SphereGeometry(asteroid.r);
-    let material = new THREE.MeshPhongMaterial({color: "#00ffff"});
+    let material = new THREE.MeshPhongMaterial({color: asteroid.color});
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = asteroid.pos.x;
     cube.position.y = asteroid.pos.y;
@@ -313,6 +331,19 @@ socket.on("playerShot", (player)=>{
 	console.log(`${player} player shot`);
 });
 
+socket.on("landedOnPlanet", (player)=>{
+  if(player == whoami){
+    alert("woot, i landed on the planet. just me, no oneelse should get this alert.");
+    onPlanet_lookAngles.phi = 0;
+    onPlanet_lookAngles.theta = -Math.PI/2;
+
+    let player = game_environment[whoami];
+    let asteroid = game_environment.environment.asteroids[game_environment[whoami].onPlanet];
+    copyBtoA(onPlanet_lookPos, sphToCarForCamera(onPlanet_lookAngles, asteroid, player));
+    camera.lookAt(onPlanet_lookPos);
+  }
+});
+
 socket.on('update', (new_game_environment)=>{
   game_environment = new_game_environment;
   handleKeys();
@@ -321,5 +352,12 @@ socket.on('update', (new_game_environment)=>{
     initGameEnv();
     animate();
   }
+
+  if(whoami != "spectator"){
+    if(game_environment[whoami]["onPlanet"] != "-1"){
+      camera.lookAt(onPlanet_lookPos);
+    }
+  }
+
 });
 

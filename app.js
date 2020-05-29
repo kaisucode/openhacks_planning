@@ -41,13 +41,16 @@ let game_environment = {
   }
 }
 
-for (let i = 0; i < 10; i++){
-  let r = (Math.random()+0.5)*20;
+for (let i = 0; i < 30; i++){
+  let r = (Math.random()+0.5)*50;
+  let randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+
   game_environment.environment.asteroids[i+""] = {
-    "pos": randvec(500), 
+    "pos": randvec(1000), 
     "vel": vec(0,0,0), 
-    "mass": Math.pow(r, 3)*0.1, 
-    "r": r
+    "mass": 10*Math.pow(r, 0.11), 
+    "r": r, 
+    "color": randomColor
   }
 }
 
@@ -116,18 +119,17 @@ io.sockets.on('connection', function(socket){
 
 			let angles = carToSph(asteroid, player);
 			if(playerMovement.direction == "up"){
-				angles.phi -= 0.1;
+				angles.phi -= 0.01;
 			}
 			if(playerMovement.direction == "left"){
-				angles.theta -= 0.1;
+				angles.theta -= 0.01;
 			}
 			if(playerMovement.direction == "down"){
-				angles.phi += 0.1;
+				angles.phi += 0.01;
 			}
 			if(playerMovement.direction == "right"){
-				angles.theta += 0.1;
+				angles.theta += 0.01;
 			}
-
 			copyBtoA(player.pos, sphToCar(angles, asteroid, player));
 		}
   });
@@ -158,9 +160,15 @@ io.sockets.on('connection', function(socket){
     const TOLERANCE = 1.1;
     for(p in PLAYERS){
       let player = PLAYERS[p];
+    
+      if(vecMag(game_environment[player].pos) > 2000) {
+        scaleVec(game_environment[player].pos, 0);
+        scaleVec(game_environment[player].vel, 0);
+      }
+
       if(game_environment[player].onPlanet != "-1"){
         let asteroid = game_environment.environment.asteroids[game_environment[player].onPlanet];
-        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) > TOLERANCE*(sq(asteroid.r) + sq(RADIUS.player))){
+        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) > (sq(asteroid.r) + sq(RADIUS.player))){
           game_environment[player].onPlanet = "-1";
         }
       }
@@ -169,10 +177,11 @@ io.sockets.on('connection', function(socket){
         if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= (sq(asteroid.r) + sq(RADIUS.player))*TOLERANCE){
           game_environment[player].onPlanet = i+"";
           scaleVec(game_environment[player].vel, 0);
+          socket.emit("landedOnPlanet", {"player": player});
           break;
         }
         else {
-          let gP = GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 3/4));
+          let gP = GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 2/7));
           let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
 
