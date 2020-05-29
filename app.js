@@ -35,18 +35,16 @@ let game_environment = {
       "0": {"pos": vec(1,2,100), "vel": vec(0,0,0)}
     },
     "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": vec(0,0,0)},
-    "booleits": {
-      "0": {"pos": {"x": 1, "y": 2, "z": 30}, "vel": vec(0,0,0)}
-    }
+    "booleits": { }
   }
 }
 
 for (let i = 0; i < 30; i++){
-  let r = (Math.random()+0.5)*50;
+  let r = (Math.random()+0.5)*50+50;
   let randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
 
   game_environment.environment.asteroids[i+""] = {
-    "pos": randvec(1000), 
+    "pos": randvec(grid_size), 
     "vel": vec(0,0,0), 
     "mass": 10*Math.pow(r, 0.11), 
     "r": r, 
@@ -64,9 +62,9 @@ playerTaken = {
 
 
 function booleitWithinBounds(booleitPos){
-	return (booleitPos.x >= -2000 && booleitPos.x <= 2000 &&
-		booleitPos.y >= -2000 && booleitPos.y <= 2000 &&
-		booleitPos.z >= -2000 && booleitPos.z <= 2000);
+	return (booleitPos.x >= -grid_size && booleitPos.x <= grid_size &&
+		booleitPos.y >= -grid_size && booleitPos.y <= grid_size &&
+		booleitPos.z >= -grid_size && booleitPos.z <= grid_size);
 }
 
 io.sockets.on('connection', function(socket){
@@ -80,9 +78,9 @@ io.sockets.on('connection', function(socket){
     let player = data.whoami;
     let planetNormal = data.planetNormal;
     planetNormal = normalizeVec(planetNormal);
-    scaleVec(planetNormal, -JUMP_VEL);
     game_environment[player].onPlanet = "-1";
-    addToVec(game_environment[player].vel, planetNormal);
+    // addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
+    game_environment[player].vel = vecMult(planetNormal, JUMP_VEL);
 	});
 
 	socket.on('reposition', function(choice){
@@ -184,7 +182,7 @@ io.sockets.on('connection', function(socket){
           break;
         }
         else {
-          let gP = GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 2/7));
+          let gP = Math.abs(GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 1.2)));
           let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
           let accel = vecMult(normalizeVec(unnormalizedThing), gP);
 

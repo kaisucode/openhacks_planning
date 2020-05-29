@@ -1,12 +1,13 @@
-const lightSpeed = 0.3;
-
-const dim = 500;
-const center = new THREE.Vector3(dim/2,dim/2,dim/2);
+const lightSpeed = 10;
+const BULLET_SPEED = 5;
+const center = new THREE.Vector3(0,0,0);
 
 let WIDTH = window.innerWidth;
 let HEIGHT = window.innerHeight;
 let gameenvLoaded = false;
 let game_environment;
+
+let cameraWorldDirection_holder = new THREE.Vector3(0,0,0);
 
 let camControls;
 let onPlanet_lookAngles = {"phi": 0, "theta": -Math.PI/2};
@@ -27,15 +28,11 @@ const urlParams = new URLSearchParams(window.location.search);
 let whoami = urlParams.get("whoami") || "spectator";
 
 function generateBooleit(){
-	let heading = camera.getWorldDirection();
+	camera.getWorldDirection(cameraWorldDirection_holder);
 
-	updatedBooleitData = {
+	newBooleitData = {
 		"owner": whoami, 
-		"vel": heading
-	};
-	newBooleit = {
-		"pos": game_environment[whoami]["pos"], 
-		"vel": heading
+		"vel": vecMult(cameraWorldDirection_holder, BULLET_SPEED)
 	};
 	let i = Math.max(...Object.keys(game_environment.environment.booleits))+1;
 	let geometry = new THREE.SphereGeometry(RADIUS.booleits);
@@ -49,7 +46,7 @@ function generateBooleit(){
 	booleits[i] = cube;
   update_HUD();
 
-	socket.emit('shooting', updatedBooleitData);
+	socket.emit('shooting', newBooleitData);
 }
 
 
@@ -190,8 +187,10 @@ function initGameEnv(){
   }
 
   if(whoami!= "spectator"){
-    players[whoami].add(camera);
-    camera.position.set( 0, 0, 0 );
+    scene.add(camera);
+    camera.position.x = players[whoami].position.x;
+    camera.position.y = players[whoami].position.y;
+    camera.position.z = players[whoami].position.z;
   }
   else{
     spectatorPos = vec(0,0,0);
@@ -248,7 +247,7 @@ for(let i in ptLightColors){
   ptLights.push( new THREE.PointLight( ptLightColors[i], 1, 0, 1) );
   scene.add(ptLights[i]);
 
-  ptLightVels.push(new THREE.Vector3(5*Math.random(), 5*Math.random(), 5*Math.random()));
+  ptLightVels.push(new THREE.Vector3(Math.random(), Math.random(), Math.random()));
   ptLightVels[i].normalize();
   ptLightVels[i].multiplyScalar(lightSpeed);
 
@@ -257,7 +256,7 @@ for(let i in ptLightColors){
   ptLightBlobs.push(new THREE.Mesh(geometry, material));
   scene.add(ptLightBlobs[i]);
 
-  ptLights[i].position.set(Math.random()*dim, Math.random()*dim, Math.random()*dim);
+  ptLights[i].position.set(2*(Math.random()-0.5)*grid_size, 2*(Math.random()-0.5)*grid_size, 2*(Math.random()-0.5)*grid_size);
   ptLightBlobs[i].position.copy(ptLights[i].position);
 }
 
@@ -269,9 +268,9 @@ function alekRandomWalk(i){
   }
   ptLights[i].position.add(ptLightVels[i]);
 
-  if(ptLights[i].position.x < 0 || ptLights[i].position.x > dim ||
-    ptLights[i].position.y < 0 || ptLights[i].position.y > dim ||
-    ptLights[i].position.z < 0 || ptLights[i].position.z > dim){
+  if(ptLights[i].position.x < -grid_size || ptLights[i].position.x > grid_size ||
+    ptLights[i].position.y < -grid_size || ptLights[i].position.y > grid_size ||
+    ptLights[i].position.z < -grid_size || ptLights[i].position.z > grid_size){
 
     ptLightVels[i].subVectors(center, ptLights[i].position);
     ptLightVels[i].normalize();
@@ -306,6 +305,10 @@ function animate() {
   for(let player in players){
     copyBtoA(players[player].position, game_environment[player].pos);
   }
+  camera.position.x = players[whoami].position.x;
+  camera.position.y = players[whoami].position.y;
+  camera.position.z = players[whoami].position.z;
+
   for(let booleit in booleits){
     if(game_environment.environment.booleits[booleit]){
       copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
@@ -343,6 +346,8 @@ socket.on("landedOnPlanet", (player)=>{
 });
 
 socket.on("someoneElseShot", (data)=>{
+  console.log("someone shot!");
+  console.log(data.who);
   if(data.who != whoami){
     let booleit = game_environment.environment.booleits[data.bulletId];
     let geometry = new THREE.SphereGeometry(RADIUS.booleits);

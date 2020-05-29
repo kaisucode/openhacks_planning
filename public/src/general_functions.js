@@ -1,7 +1,10 @@
 // note: you can't have const or let in here, because eval is dumb
 
-var GRAVITY = 0.01;
-var JUMP_VEL = 3;
+
+var grid_size = 1000; // [-1000, 1000]^3 is the world
+var GRAVITY = 3;
+var JUMP_DIST = 120;
+var JUMP_VEL = 10;
 
 var MASS = {
   "player": 1,
@@ -12,7 +15,7 @@ var MASS = {
 
 var RADIUS = {
   "player": 0.5,
-  "booleits": 0.4,
+  "booleits": 20,
   "extralife": 1,
   "amoboxes": 1
 };
@@ -59,7 +62,7 @@ function vecMult(v, k){
   return {"x": v.x*k, "y": v.y*k, "z": v.z*k};
 }
 function normalizeVec(v){
-  return vecMult(v, 1/vecMagSquared(v));
+  return vecMult(v, 1/vecMag(v));
 }
 function vecDiffMagSquared(a, b){
   return vecMagSquared(vecDiff(a,b));
