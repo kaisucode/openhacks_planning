@@ -79,8 +79,9 @@ io.sockets.on('connection', function(socket){
     let planetNormal = data.planetNormal;
     planetNormal = normalizeVec(planetNormal);
     game_environment[player].onPlanet = "-1";
-    // addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
+    addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
     game_environment[player].vel = vecMult(planetNormal, JUMP_VEL);
+    console.log(game_environment[player].vel);
 	});
 
 	socket.on('reposition', function(choice){

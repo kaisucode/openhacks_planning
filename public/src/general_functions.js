@@ -4,7 +4,7 @@
 var grid_size = 1000; // [-1000, 1000]^3 is the world
 var GRAVITY = 3;
 var JUMP_DIST = 120;
-var JUMP_VEL = 10;
+var JUMP_VEL = 30;
 
 var MASS = {
   "player": 1,
