@@ -64,9 +64,9 @@ playerTaken = {
 
 
 function booleitWithinBounds(booleitPos){
-	return (booleitPos.x >= 0 && booleitPos.x <= 1000 &&
-		booleitPos.y >= 0 && booleitPos.y <= 1000 &&
-		booleitPos.z >= 0 && booleitPos.z <= 1000);
+	return (booleitPos.x >= -2000 && booleitPos.x <= 2000 &&
+		booleitPos.y >= -2000 && booleitPos.y <= 2000 &&
+		booleitPos.z >= -2000 && booleitPos.z <= 2000);
 }
 
 io.sockets.on('connection', function(socket){
@@ -147,7 +147,10 @@ io.sockets.on('connection', function(socket){
 		};
 
 		game_environment[owner]["booleits"]--;
-		game_environment.environment.booleits[Math.max(...Object.keys(game_environment.environment.booleits))+1] = newBooleit;
+    let newBulletId = Math.max(...Object.keys(game_environment.environment.booleits))+1;// overly complex, should just have a global counter
+		game_environment.environment.booleits[newBulletId] = newBooleit;
+
+    socket.emit("someoneElseShot", {"who": owner, "bulletId": newBulletId});
 	});
 
   setTimeout(update, 100);
@@ -198,19 +201,19 @@ io.sockets.on('connection', function(socket){
 
     for(let bi in game_environment.environment.booleits){
       let booleit = game_environment.environment.booleits[bi];
-      for(let ai in game_environment.environment.asteroids){
-        let asteroid = game_environment.environment.asteroids[ai];
-        if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
-					// socket.emit("delBooleitFromScene", bi);
-          // delete game_environment.environment.booleits[bi];
-          break;
-        }
-      }
+      // for(let ai in game_environment.environment.asteroids){
+      //   let asteroid = game_environment.environment.asteroids[ai];
+      //   if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
+      //     // socket.emit("delBooleitFromScene", bi);
+      //     // delete game_environment.environment.booleits[bi];
+      //     break;
+      //   }
+      // }
       for(let pi in PLAYERS){
         let player = game_environment[PLAYERS[pi]];
         if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
           // you got hit notification? @KEVIN
-					socket.emit("playerShot", pi);
+					socket.emit("playerGotHit", pi);
 					socket.emit("delBooleitFromScene", bi);
           delete game_environment.environment.booleits[bi];
           if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){

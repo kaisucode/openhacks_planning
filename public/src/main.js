@@ -40,7 +40,7 @@ function generateBooleit(){
 	let i = Math.max(...Object.keys(game_environment.environment.booleits))+1;
 	let geometry = new THREE.SphereGeometry(RADIUS.booleits);
 
-	let material = new THREE.MeshPhongMaterial({color: "pink"});
+	let material = new THREE.MeshPhongMaterial({color: "red"});
 	const cube = new THREE.Mesh(geometry, material);
 	cube.position.x = game_environment[whoami]["pos"]["x"];
 	cube.position.y = game_environment[whoami]["pos"]["y"];
@@ -212,7 +212,7 @@ function initGameEnv(){
   for (let i in game_environment.environment.booleits){
     let booleit = game_environment.environment.booleits[i];
     let geometry = new THREE.SphereGeometry(RADIUS.booleits);
-    let material = new THREE.MeshPhongMaterial({color: "pink"});
+    let material = new THREE.MeshPhongMaterial({color: "red"});
     const cube = new THREE.Mesh(geometry, material);
     cube.position.x = booleit.pos.x;
     cube.position.y = booleit.pos.y;
@@ -220,7 +220,6 @@ function initGameEnv(){
     scene.add(cube);
     booleits[i] = cube;
   }
-
 
   {
     const loader = new THREE.CubeTextureLoader();
@@ -323,12 +322,11 @@ function animate() {
 socket.on("delBooleitFromScene", (booleitID)=>{
 	scene.remove(booleits[booleitID]);
 	delete booleits[booleitID];
-	animate();
 	console.log("removed booleit from scene");
 });
 
-socket.on("playerShot", (player)=>{
-	console.log(`${player} player shot`);
+socket.on("playerGotHit", (player)=>{
+	console.log(`${player} player got hit`);
 });
 
 socket.on("landedOnPlanet", (player)=>{
@@ -343,6 +341,20 @@ socket.on("landedOnPlanet", (player)=>{
     camera.lookAt(onPlanet_lookPos);
   }
 });
+
+socket.on("someoneElseShot", (data)=>{
+  if(data.who != whoami){
+    let booleit = game_environment.environment.booleits[data.bulletId];
+    let geometry = new THREE.SphereGeometry(RADIUS.booleits);
+    let material = new THREE.MeshPhongMaterial({color: "red"});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.x = booleit.pos.x;
+    cube.position.y = booleit.pos.y;
+    cube.position.z = booleit.pos.z;
+    scene.add(cube);
+    booleits[i] = cube;
+  }
+})
 
 socket.on('update', (new_game_environment)=>{
   game_environment = new_game_environment;
