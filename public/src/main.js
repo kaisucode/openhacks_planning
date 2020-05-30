@@ -1,5 +1,5 @@
 const lightSpeed = 10;
-const BULLET_SPEED = 5;
+const BULLET_SPEED = 10;
 const center = new THREE.Vector3(0,0,0);
 
 let WIDTH = window.innerWidth;
@@ -298,26 +298,28 @@ function animate() {
 	renderer.render( scene, camera );
 }
 
-socket.on("newBooleit", (booleitId)=>{
-  console.log("someone shot! booleitId: " + booleitId);
-  let booleit = game_environment.environment.booleits[booleitId];
-  let geometry = new THREE.SphereGeometry(RADIUS.booleits);
-  let material = new THREE.MeshPhongMaterial({color: "red"});
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.x = booleit.pos.x;
-  cube.position.y = booleit.pos.y;
-  cube.position.z = booleit.pos.z;
-  cube.name = "booleit_"+booleitId;
-  scene.add(cube);
-  booleits[booleitId] = cube;
-});
+function spawnBooleit(booleitId){
+  console.log("tried to spawn " + booleitId);
+  if(booleitId in game_environment.environment.booleits){
+    console.log("someone shot! booleitId: " + booleitId);
+    let booleit = game_environment.environment.booleits[booleitId];
+    let geometry = new THREE.SphereGeometry(RADIUS.booleits);
+    let material = new THREE.MeshPhongMaterial({color: "red"});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.x = booleit.pos.x;
+    cube.position.y = booleit.pos.y;
+    cube.position.z = booleit.pos.z;
+    cube.name = "booleit_"+booleitId;
+    scene.add(cube);
+    booleits[booleitId] = cube;
+  }
+};
 
 
 socket.on("delBooleitFromScene", (booleitID)=>{
 	scene.remove(booleits[booleitID]);
-	delete booleits[booleitID];
-	console.log("removed booleit from scene");
-
+  delete booleits[booleitID];
+	console.log("removed booleit " + booleitID + " from scene");
   //     var selectedObject = scene.getObjectByName(object.name);
   //     scene.delete(selectedObject);
 });
@@ -339,8 +341,14 @@ socket.on("landedOnPlanet", (player)=>{
   }
 });
 
-socket.on('update', (new_game_environment)=>{
+socket.on('update', (data)=>{
+  let new_game_environment = data.game_environment;
   game_environment = new_game_environment;
+
+  for(let booleitId in data.new_booleits){
+    spawnBooleit(data.new_booleits[booleitId]);
+  }
+
   handleKeys();
   if(!gameenvLoaded){
     gameenvLoaded = true;
@@ -353,7 +361,6 @@ socket.on('update', (new_game_environment)=>{
       camera.lookAt(onPlanet_lookPos);
     }
   }
-
 });
 
 setInterval(update_HUD, 500);

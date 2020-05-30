@@ -37,7 +37,7 @@ let game_environment = {
     "extralife": {"pos": {"x": 1, "y": 2, "z": 200}, "vel": vec(0,0,0)},
     "booleits": { }
   }
-}
+};
 
 let num_booleits_shot = 0;
 let emit_booleit_queue = [];
@@ -151,105 +151,102 @@ io.sockets.on('connection', function(socket){
 
     let newBooleitId = num_booleits_shot+"";
     num_booleits_shot += 1;
-		game_environment.environment.booleits[newBooleitId] = { "pos": copyVec(game_environment[owner].pos), "vel": booleit_data["vel"] };
+		game_environment.environment.booleits[newBooleitId] = { 
+      "pos": copyVec(game_environment[owner].pos), 
+      "vel": booleit_data["vel"],
+      "shotby": owner
+    };
 
     emit_booleit_queue.push(newBooleitId);
 	});
 
-  function update(){
-		if(!startGame){
-			setTimeout(update, 100);
-			return;
-		}
-
-    const TOLERANCE = 1.1;
-    for(p in PLAYERS){
-      let player = PLAYERS[p];
-
-      if(game_environment[player].liftingOff){
-        addToVec(game_environment[player].vel, vecMult(game_environment[player].lift_direction, JUMP_ACCEL));
-      }
-    
-      if(vecMag(game_environment[player].pos) > 2000) {
-        scaleVec(game_environment[player].pos, 0);
-        scaleVec(game_environment[player].vel, 0);
-      }
-
-      if(game_environment[player].onPlanet != "-1"){
-        let asteroid = game_environment.environment.asteroids[game_environment[player].onPlanet];
-        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) > (sq(asteroid.r) + sq(RADIUS.player))){
-          game_environment[player].onPlanet = "-1";
-        }
-      }
-      for(i in game_environment.environment.asteroids){
-        let asteroid = game_environment.environment.asteroids[i];
-        if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= (sq(asteroid.r) + sq(RADIUS.player))*TOLERANCE){
-          game_environment[player].onPlanet = i+"";
-          scaleVec(game_environment[player].vel, 0);
-          socket.emit("landedOnPlanet", {"player": player});
-          break;
-        }
-        else {
-          let gP = Math.abs(GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 1.2)));
-          let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
-          let accel = vecMult(normalizeVec(unnormalizedThing), gP);
-
-          addToVec(game_environment[player].vel, accel);
-        }
-      }
-      addToVec(game_environment[player].pos, game_environment[player].vel);
-    }
-
-		for(i in game_environment.environment.booleits){
-			addToVec(game_environment.environment.booleits[i].pos, vecMult(game_environment.environment.booleits[i].vel, 1));
-		}
-
-    for(let bi in game_environment.environment.booleits){
-      let booleit = game_environment.environment.booleits[bi];
-      // for(let ai in game_environment.environment.asteroids){
-      //   let asteroid = game_environment.environment.asteroids[ai];
-      //   if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
-      //     // socket.emit("delBooleitFromScene", bi);
-      //     // delete game_environment.environment.booleits[bi];
-      //     break;
-      //   }
-      // }
-      for(let pi in PLAYERS){
-        let player = game_environment[PLAYERS[pi]];
-        if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
-          // you got hit notification? @KEVIN
-					socket.emit("playerGotHit", PLAYERS[pi]);
-					socket.emit("delBooleitFromScene", bi);
-          delete game_environment.environment.booleits[bi];
-          if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){
-            game_environment.redTeam.teamlives -= 1;
-          }
-          if(PLAYERS[pi] == "bluA" || PLAYERS[pi] == "bluB"){
-            game_environment.bluTeam.teamlives -= 1;
-          }
-          break;
-        }
-      }
-			if(!booleitWithinBounds(booleit.pos)){
-				socket.emit("delBooleitFromScene", bi);
-				delete game_environment.environment.booleits[bi];
-				break;
-			}
-    }
-
-    socket.emit("update", game_environment);
-    for(let i = emit_booleit_queue.length; i--; i>=0){
-      socket.emit("newBooleit", emit_booleit_queue.pop());
-    }
-    setTimeout(update, 100);
-  };
-  update();
-
-
 });
 
-// Running timeout for bullet path and asteroid path and player path
-// checkForAsteroidCollisons();
-// checkForAmoboxCollisons();
-// checkForExtralifeCollisons();
+
+function update(){
+  if(!startGame){
+    setTimeout(update, 100);
+    return;
+  }
+
+  const TOLERANCE = 1.1;
+  for(p in PLAYERS){
+    let player = PLAYERS[p];
+
+    if(game_environment[player].liftingOff){
+      addToVec(game_environment[player].vel, vecMult(game_environment[player].lift_direction, JUMP_ACCEL));
+    }
+  
+    if(vecMag(game_environment[player].pos) > 2000) {
+      scaleVec(game_environment[player].pos, 0);
+      scaleVec(game_environment[player].vel, 0);
+    }
+
+    if(game_environment[player].onPlanet != "-1"){
+      let asteroid = game_environment.environment.asteroids[game_environment[player].onPlanet];
+      if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) > (sq(asteroid.r) + sq(RADIUS.player))){
+        game_environment[player].onPlanet = "-1";
+      }
+    }
+    for(i in game_environment.environment.asteroids){
+      let asteroid = game_environment.environment.asteroids[i];
+      if(vecDiffMagSquared(game_environment[player].pos, asteroid.pos) <= (sq(asteroid.r) + sq(RADIUS.player))*TOLERANCE){
+        game_environment[player].onPlanet = i+"";
+        scaleVec(game_environment[player].vel, 0);
+        io.emit("landedOnPlanet", {"player": player});
+        break;
+      }
+      else {
+        let gP = Math.abs(GRAVITY*(MASS.player*asteroid.mass)/(Math.pow(vecDiffMagSquared(game_environment[player].pos, asteroid.pos), 1.2)));
+        let unnormalizedThing = vecDiff(asteroid.pos, game_environment[player].pos);
+        let accel = vecMult(normalizeVec(unnormalizedThing), gP);
+
+        addToVec(game_environment[player].vel, accel);
+      }
+    }
+    addToVec(game_environment[player].pos, game_environment[player].vel);
+  }
+
+  for(let bi in game_environment.environment.booleits){
+    addToVec(game_environment.environment.booleits[bi].pos, vecMult(game_environment.environment.booleits[bi].vel, 1));
+
+    let booleit = game_environment.environment.booleits[bi];
+    // for(let ai in game_environment.environment.asteroids){
+    //   let asteroid = game_environment.environment.asteroids[ai];
+    //   if(vecDiffMagSquared(asteroid.pos, booleit.pos) <= asteroid.r + RADIUS.booleits){
+    //     // io.emit("delBooleitFromScene", bi);
+    //     // delete game_environment.environment.booleits[bi];
+    //     break;
+    //   }
+    // }
+    for(let pi in PLAYERS){
+      let player = game_environment[PLAYERS[pi]];
+      if(booleit.shotby != PLAYERS[pi] && vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
+        // you got hit notification? @KEVIN
+        io.emit("playerGotHit", PLAYERS[pi]);
+        io.emit("delBooleitFromScene", bi);
+        delete game_environment.environment.booleits[bi];
+        if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){
+          game_environment.redTeam.teamlives -= 1;
+        }
+        if(PLAYERS[pi] == "bluA" || PLAYERS[pi] == "bluB"){
+          game_environment.bluTeam.teamlives -= 1;
+        }
+        break;
+      }
+    }
+    if(!booleitWithinBounds(booleit.pos)){
+      io.emit("delBooleitFromScene", bi);
+      delete game_environment.environment.booleits[bi];
+      break;
+    }
+  }
+
+  if(emit_booleit_queue.length > 0)
+    console.log(JSON.stringify(emit_booleit_queue));
+
+  io.emit("update", {"game_environment": game_environment, "new_booleits": emit_booleit_queue.splice(0)});
+  setTimeout(update, 100);
+};
+update();
 
