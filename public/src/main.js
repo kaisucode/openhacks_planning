@@ -29,24 +29,10 @@ let whoami = urlParams.get("whoami") || "spectator";
 
 function generateBooleit(){
 	camera.getWorldDirection(cameraWorldDirection_holder);
-
-	newBooleitData = {
+	socket.emit('booleitShot', {
 		"owner": whoami, 
 		"vel": vecMult(cameraWorldDirection_holder, BULLET_SPEED)
-	};
-	let i = Math.max(...Object.keys(game_environment.environment.booleits))+1;
-	let geometry = new THREE.SphereGeometry(RADIUS.booleits);
-
-	let material = new THREE.MeshPhongMaterial({color: "red"});
-	const cube = new THREE.Mesh(geometry, material);
-	cube.position.x = game_environment[whoami]["pos"]["x"];
-	cube.position.y = game_environment[whoami]["pos"]["y"];
-	cube.position.z = game_environment[whoami]["pos"]["z"];
-	scene.add(cube);
-	booleits[i] = cube;
-  update_HUD();
-
-	socket.emit('shooting', newBooleitData);
+	});
 }
 
 
@@ -208,18 +194,6 @@ function initGameEnv(){
     asteroids[i] = cube;
   }
 
-  for (let i in game_environment.environment.booleits){
-    let booleit = game_environment.environment.booleits[i];
-    let geometry = new THREE.SphereGeometry(RADIUS.booleits);
-    let material = new THREE.MeshPhongMaterial({color: "red"});
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.x = booleit.pos.x;
-    cube.position.y = booleit.pos.y;
-    cube.position.z = booleit.pos.z;
-    scene.add(cube);
-    booleits[i] = cube;
-  }
-
   {
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
@@ -292,10 +266,12 @@ function update_HUD(){
   if(whoami == "redA" || whoami == "redB"){
     $("#hud").append(`<p style='position:absolute; top:5vh; left:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
     $("#hud").append(`<p style='position:absolute; top:8vh; left:0; color: white; font-size: xx-large'>${whoami}</p>`);
+    $("#hud").append(`<p style='position:absolute; top:11vh; left:0; color: white; font-size: xx-large'>${game_environment[whoami].onPlanet}</p>`);
   }
   if(whoami == "bluB" || whoami == "bluA"){
     $("#hud").append(`<p style='position:absolute; top:5vh; right:0; color: white; font-size: xx-large'>Booleits: ${game_environment[whoami].booleits}</p>`);
     $("#hud").append(`<p style='position:absolute; top:8vh; right:0; color: white; font-size: xx-large'>${whoami}</p>`);
+    $("#hud").append(`<p style='position:absolute; top:11vh; right:0; color: white; font-size: xx-large'>planet ${game_environment[whoami].onPlanet}</p>`);
   }
 }
 
@@ -322,10 +298,28 @@ function animate() {
 	renderer.render( scene, camera );
 }
 
+socket.on("newBooleit", (booleitId)=>{
+  console.log("someone shot! booleitId: " + booleitId);
+  let booleit = game_environment.environment.booleits[booleitId];
+  let geometry = new THREE.SphereGeometry(RADIUS.booleits);
+  let material = new THREE.MeshPhongMaterial({color: "red"});
+  const cube = new THREE.Mesh(geometry, material);
+  cube.position.x = booleit.pos.x;
+  cube.position.y = booleit.pos.y;
+  cube.position.z = booleit.pos.z;
+  cube.name = "booleit_"+booleitId;
+  scene.add(cube);
+  booleits[booleitId] = cube;
+});
+
+
 socket.on("delBooleitFromScene", (booleitID)=>{
 	scene.remove(booleits[booleitID]);
 	delete booleits[booleitID];
 	console.log("removed booleit from scene");
+
+  //     var selectedObject = scene.getObjectByName(object.name);
+  //     scene.delete(selectedObject);
 });
 
 socket.on("playerGotHit", (player)=>{
@@ -345,22 +339,6 @@ socket.on("landedOnPlanet", (player)=>{
   }
 });
 
-socket.on("someoneElseShot", (data)=>{
-  console.log("someone shot!");
-  console.log(data.who);
-  if(data.who != whoami){
-    let booleit = game_environment.environment.booleits[data.bulletId];
-    let geometry = new THREE.SphereGeometry(RADIUS.booleits);
-    let material = new THREE.MeshPhongMaterial({color: "red"});
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.x = booleit.pos.x;
-    cube.position.y = booleit.pos.y;
-    cube.position.z = booleit.pos.z;
-    scene.add(cube);
-    booleits[i] = cube;
-  }
-})
-
 socket.on('update', (new_game_environment)=>{
   game_environment = new_game_environment;
   handleKeys();
@@ -377,4 +355,6 @@ socket.on('update', (new_game_environment)=>{
   }
 
 });
+
+setInterval(update_HUD, 500);
 

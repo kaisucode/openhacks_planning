@@ -25,10 +25,10 @@ let game_environment = {
   "bluTeam": {
     "teamlives": 5
   },
-  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
-  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
-  "bluA": { "booleits": 10, "pos": {"x": 10, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
-  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1" },
+  "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1", "lifting_off": false, "lift_direction": vec(1,0,0)},
+  "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1", "lifting_off": false, "lift_direction": vec(1,0,0)},
+  "bluA": { "booleits": 10, "pos": {"x": 10, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1", "lifting_off": false, "lift_direction": vec(1,0,0)},
+  "bluB": { "booleits": 10, "pos": {"x": 20, "y": 20, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1", "lifting_off": false, "lift_direction": vec(1,0,0)},
   "environment": {
     "asteroids": { },
     "amoboxes": {
@@ -38,6 +38,9 @@ let game_environment = {
     "booleits": { }
   }
 }
+
+let num_booleits_shot = 0;
+let emit_booleit_queue = [];
 
 for (let i = 0; i < 30; i++){
   let r = (Math.random()+0.5)*50+50;
@@ -78,10 +81,15 @@ io.sockets.on('connection', function(socket){
     let player = data.whoami;
     let planetNormal = data.planetNormal;
     planetNormal = normalizeVec(planetNormal);
+
+    game_environment[player].liftingOff = true;
+    game_environment[player].lift_direction = planetNormal;
+    setTimeout(()=>{game_environment[player].liftingOff = false}, 1500);
+
     game_environment[player].onPlanet = "-1";
-    addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
-    game_environment[player].vel = vecMult(planetNormal, JUMP_VEL);
-    console.log(game_environment[player].vel);
+    // addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
+    // game_environment[player].vel = vecMult(planetNormal, JUMP_VEL);
+    // console.log(game_environment[player].vel);
 	});
 
 	socket.on('reposition', function(choice){
@@ -137,22 +145,17 @@ io.sockets.on('connection', function(socket){
     socket.emit('updateRolesTaken', playerTaken); 
   });
 
-  socket.on('shooting', function(action){
-    let owner = action["owner"];
-
-		newBooleit = {
-			"pos": {...game_environment[owner].pos}, 
-			"vel": action["vel"]
-		};
-
+  socket.on('booleitShot', function(booleit_data){
+    let owner = booleit_data["owner"];
 		game_environment[owner]["booleits"]--;
-    let newBulletId = Math.max(...Object.keys(game_environment.environment.booleits))+1;// overly complex, should just have a global counter
-		game_environment.environment.booleits[newBulletId] = newBooleit;
 
-    socket.emit("someoneElseShot", {"who": owner, "bulletId": newBulletId});
+    let newBooleitId = num_booleits_shot+"";
+    num_booleits_shot += 1;
+		game_environment.environment.booleits[newBooleitId] = { "pos": copyVec(game_environment[owner].pos), "vel": booleit_data["vel"] };
+
+    emit_booleit_queue.push(newBooleitId);
 	});
 
-  setTimeout(update, 100);
   function update(){
 		if(!startGame){
 			setTimeout(update, 100);
@@ -162,6 +165,10 @@ io.sockets.on('connection', function(socket){
     const TOLERANCE = 1.1;
     for(p in PLAYERS){
       let player = PLAYERS[p];
+
+      if(game_environment[player].liftingOff){
+        addToVec(game_environment[player].vel, vecMult(game_environment[player].lift_direction, JUMP_ACCEL));
+      }
     
       if(vecMag(game_environment[player].pos) > 2000) {
         scaleVec(game_environment[player].pos, 0);
@@ -189,9 +196,8 @@ io.sockets.on('connection', function(socket){
 
           addToVec(game_environment[player].vel, accel);
         }
-
-        addToVec(game_environment[player].pos, game_environment[player].vel);
       }
+      addToVec(game_environment[player].pos, game_environment[player].vel);
     }
 
 		for(i in game_environment.environment.booleits){
@@ -212,7 +218,7 @@ io.sockets.on('connection', function(socket){
         let player = game_environment[PLAYERS[pi]];
         if(vecDiffMagSquared(player.pos, booleit.pos) <= RADIUS.booleits + RADIUS.player){
           // you got hit notification? @KEVIN
-					socket.emit("playerGotHit", pi);
+					socket.emit("playerGotHit", PLAYERS[pi]);
 					socket.emit("delBooleitFromScene", bi);
           delete game_environment.environment.booleits[bi];
           if(PLAYERS[pi] == "redA" || PLAYERS[pi] == "redB"){
@@ -232,6 +238,9 @@ io.sockets.on('connection', function(socket){
     }
 
     socket.emit("update", game_environment);
+    for(let i = emit_booleit_queue.length; i--; i>=0){
+      socket.emit("newBooleit", emit_booleit_queue.pop());
+    }
     setTimeout(update, 100);
   };
   update();

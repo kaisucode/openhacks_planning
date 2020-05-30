@@ -2,9 +2,10 @@
 
 
 var grid_size = 1000; // [-1000, 1000]^3 is the world
-var GRAVITY = 3;
+var GRAVITY = 5;
 var JUMP_DIST = 120;
 var JUMP_VEL = 30;
+var JUMP_ACCEL = 1;
 
 var MASS = {
   "player": 1,
@@ -21,6 +22,10 @@ var RADIUS = {
 };
 
 var PLAYERS = ["redA", "redB", "bluA", "bluB"];
+
+function copyVec(v){
+  return {"x": v.x, "y": v.y, "z": v.z};
+}
 
 function copyBtoA(a, b){
   a.x = b.x;
