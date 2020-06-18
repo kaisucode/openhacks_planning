@@ -1,5 +1,5 @@
-const lightSpeed = 10;
-const BULLET_SPEED = 10;
+const lightSpeed = 5;
+const BULLET_SPEED = 5;
 const center = new THREE.Vector3(0,0,0);
 
 let WIDTH = window.innerWidth;
@@ -288,6 +288,12 @@ function animate() {
   for(let booleit in booleits){
     if(game_environment.environment.booleits[booleit]){
       copyBtoA(booleits[booleit].position, game_environment.environment.booleits[booleit].pos);
+    }
+  }
+
+  for(let asteroid in booleits){
+    if(game_environment.environment.asteroids[asteroid]){
+      copyBtoA(asteroids[asteroid].position, game_environment.environment.asteroids[asteroid].pos);
     }
   }
 

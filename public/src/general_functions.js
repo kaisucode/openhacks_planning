@@ -2,10 +2,11 @@
 
 
 var grid_size = 1000; // [-1000, 1000]^3 is the world
-var GRAVITY = 10;
-var JUMP_DIST = 120;
-var JUMP_VEL = 30;
-var JUMP_ACCEL = 1;
+var GRAVITY = 500;
+var JUMP_DIST = 400;
+var JUMP_VEL = 50;
+var JUMP_ACCEL = 2;
+
 
 var MASS = {
   "player": 1,

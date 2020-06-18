@@ -20,10 +20,10 @@ app.get('/', function(req, res){
 
 let game_environment = {
   "redTeam": {
-    "teamlives": 5
+    "teamlives": 10
   },
   "bluTeam": {
-    "teamlives": 5
+    "teamlives": 10
   },
   "redA": { "booleits": 10, "pos": {"x": 1, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1", "lifting_off": false, "lift_direction": vec(1,0,0)},
   "redB": { "booleits": 10, "pos": {"x": 10, "y": 2, "z": 3}, "vel": vec(0,0,0), "onPlanet": "-1", "lifting_off": false, "lift_direction": vec(1,0,0)},
@@ -48,7 +48,7 @@ for (let i = 0; i < 30; i++){
 
   game_environment.environment.asteroids[i+""] = {
     "pos": randvec(grid_size), 
-    "vel": vec(0,0,0), 
+    "vel": randvec(1), 
     "mass": 10*Math.pow(r, 0.11), 
     "r": r, 
     "color": randomColor
@@ -87,8 +87,8 @@ io.sockets.on('connection', function(socket){
     setTimeout(()=>{game_environment[player].liftingOff = false}, 1500);
 
     game_environment[player].onPlanet = "-1";
-    // addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
-    // game_environment[player].vel = vecMult(planetNormal, JUMP_VEL);
+    addToVec(game_environment[player].pos, vecMult(planetNormal, JUMP_DIST));
+    game_environment[player].vel = vecMult(planetNormal, JUMP_VEL);
     // console.log(game_environment[player].vel);
 	});
 
@@ -126,16 +126,16 @@ io.sockets.on('connection', function(socket){
 
 			let angles = carToSph(asteroid, player);
 			if(playerMovement.direction == "up"){
-				angles.phi -= 0.01;
+				angles.phi -= 0.02;
 			}
 			if(playerMovement.direction == "left"){
-				angles.theta -= 0.01;
+				angles.theta -= 0.02;
 			}
 			if(playerMovement.direction == "down"){
-				angles.phi += 0.01;
+				angles.phi += 0.02;
 			}
 			if(playerMovement.direction == "right"){
-				angles.theta += 0.01;
+				angles.theta += 0.02;
 			}
 			copyBtoA(player.pos, sphToCar(angles, asteroid, player));
 		}
@@ -207,6 +207,11 @@ function update(){
     addToVec(game_environment[player].pos, game_environment[player].vel);
   }
 
+
+  for(let bi in game_environment.environment.asteroids){
+    addToVec(game_environment.environment.asteroids[bi].pos, vecMult(game_environment.environment.asteroids[bi].vel, 1));
+	}
+
   for(let bi in game_environment.environment.booleits){
     addToVec(game_environment.environment.booleits[bi].pos, vecMult(game_environment.environment.booleits[bi].vel, 1));
 
@@ -246,7 +251,7 @@ function update(){
     console.log(JSON.stringify(emit_booleit_queue));
 
   io.emit("update", {"game_environment": game_environment, "new_booleits": emit_booleit_queue.splice(0)});
-  setTimeout(update, 100);
+  setTimeout(update, 10);
 };
 update();
 
